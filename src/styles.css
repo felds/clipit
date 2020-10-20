@@ -6,11 +6,18 @@ html {
   box-sizing: inherit;
 }
 
-.drag {
-  border: medium solid red;
+audio {
+  width: 100%;
 }
 
-.player {
-  border: medium solid navy;
-  padding: 1rem;
+/* drop-area */
+.drop-area {
+  border: medium dashed rgb(204, 212, 222);
+  padding: 4rem;
+}
+.drop-area--active {
+  border: medium dashed rgb(35, 198, 114);
+}
+.drop-area--rejected {
+  border: medium dashed firebrick;
 }
