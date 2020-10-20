@@ -1,0 +1,16 @@
+html {
+  font: 16px/24px sans-serif;
+  box-sizing: border-box;
+}
+* {
+  box-sizing: inherit;
+}
+
+.drag {
+  border: medium solid red;
+}
+
+.player {
+  border: medium solid navy;
+  padding: 1rem;
+}
