@@ -15,7 +15,7 @@ export default function App() {
     <div className="app">
       <DropArea onDrop={onDrop}>Larga a parada aqui</DropArea>
       {file && <Player file={file} />}
-      <Tchananan />
+      <Tchananan onChange={(x) => console.log("start: %s, end: %s", ...x)} />
     </div>
   );
 }
