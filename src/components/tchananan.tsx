@@ -10,24 +10,24 @@ export default function Tchananan({ onChange }: TchanananProps) {
   useEffect(function canvasStuff() {
     let animationFrame: number | null = null;
     let isDragging = false;
-    let startX: number | null = null;
-    let endX: number | null = null;
+    let start: number | null = null;
+    let end: number | null = null;
     const canvas = canvasRef.current!;
 
     function mouseMove(e: MouseEvent) {
       if (!isDragging) return;
-      endX = clamp(0, canvas.width, e.pageX - canvas.offsetLeft);
+      end = clamp((e.pageX - canvas.offsetLeft) / canvas.width);
     }
 
     function mouseUp() {
       if (!isDragging) return;
       isDragging = false;
-      onChange?.([-12, 14]);
+      if (start !== null && end !== null) onChange?.([start, end]);
     }
 
     function mouseDown(e: MouseEvent) {
-      startX = clamp(0, canvas.width, e.pageX - canvas.offsetLeft);
-      endX = startX;
+      start = clamp((e.pageX - canvas.offsetLeft) / canvas.width);
+      end = start;
       isDragging = true;
     }
 
@@ -42,7 +42,10 @@ export default function Tchananan({ onChange }: TchanananProps) {
       const ctx = canvas.getContext("2d")!;
       ctx.clearRect(0, 0, width, height);
 
-      if (startX !== null && endX !== null) {
+      if (start !== null && end !== null) {
+        const startX = start * width;
+        const endX = end * width;
+
         ctx.beginPath();
         ctx.rect(startX, 10, endX - startX, height - 20);
         ctx.fillStyle = "#ffffff80";
