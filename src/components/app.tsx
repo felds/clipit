@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import DropArea from "./droparea";
+import Graph from "./graph";
 import Tchananan from "./tchananan";
 
 export default function App() {
@@ -20,6 +21,8 @@ export default function App() {
           file={file}
         />
       )}
+
+      {file && <Graph file={file} />}
     </div>
   );
 }
