@@ -1,8 +1,7 @@
 import React, { useCallback, useState } from "react";
+import Clipper from "./clipper";
 import Curve from "./curve";
 import DropArea from "./droparea";
-import Graph from "./graph";
-import Tchananan from "./tchananan";
 
 export default function App() {
   const [file, setFile] = useState<File | null>(null);
@@ -16,14 +15,7 @@ export default function App() {
     <div className="app">
       <DropArea onDrop={onDrop}>Larga a parada aqui</DropArea>
 
-      {file && (
-        <Tchananan
-          onChange={(x) => console.log("start: %s, end: %s", ...x)}
-          file={file}
-        />
-      )}
-
-      {file && <Graph file={file} />}
+      <Clipper />
 
       <Curve />
     </div>
