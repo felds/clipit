@@ -17,7 +17,7 @@ export default function App() {
 
       <Clipper />
 
-      <Curve />
+      {file && <Curve file={file} />}
     </div>
   );
 }
