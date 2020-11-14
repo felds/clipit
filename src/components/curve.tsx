@@ -1,11 +1,12 @@
-import { area, curveBasis, scaleLinear, select } from "d3";
-import * as R from "ramda";
+import { area, curveBasis, extent, scaleLinear, select } from "d3";
 import React, { useEffect, useRef, useState } from "react";
+import { loadAudioData } from "../util/sound";
 
-console.log("shoesonaasd");
+/**
+ * @todo send the audio processing to a worker
+ */
 
-const SAMPLES = 40;
-const MAX_CHANNELS = 2;
+const SAMPLES = 100;
 
 const width = 800;
 const height = 200;
@@ -23,68 +24,29 @@ const shape = area<number>()
   .y1((d) => yScale(d))
   .curve(curveBasis);
 
-// ----------------------------------------------------------------
-
-const rms = R.compose(
-  Math.sqrt,
-  R.mean,
-  R.map((x: number) => x ** 2),
-);
-
-const processChannel = (channelData: number[]): number[] =>
-  R.compose(
-    R.map(rms),
-    R.splitEvery(Math.ceil(channelData.length / SAMPLES)),
-  )(channelData);
-
-// @todo send this process to a worker
-const loadFile = (file: File): Promise<ArrayBuffer> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsArrayBuffer(file);
-    reader.onload = (e) => resolve(reader.result as ArrayBuffer);
-    reader.onerror = (e) => reject(new Error("Couldn't load file."));
-  });
-
-const getChannels = async (file: File): Promise<number[][]> => {
-  const channels: number[][] = [];
-  const audioContext = new AudioContext();
-  const buffer = await loadFile(file);
-  const audioData = await audioContext.decodeAudioData(buffer);
-  for (let i = 0; i < Math.min(audioData.numberOfChannels, MAX_CHANNELS); i++) {
-    channels.push(Array.from(audioData.getChannelData(i)));
-  }
-  return channels;
-};
-
-const loadAudioData = async (file: File): Promise<number[][]> => {
-  const audioData = await getChannels(file);
-  return audioData.map(processChannel);
-};
-
-// ----------------------------------------------------------------
 type CurveProps = {
   file: File;
 };
 export default function Curve({ file }: CurveProps) {
-  const [data, setData] = useState();
+  const initialData = Array(SAMPLES).fill(0);
+  const [data, setData] = useState(initialData);
   const pathRef = useRef<SVGPathElement>(null);
 
   useEffect(() => {
-    const initialData = R.times((_) => 1, SAMPLES);
-    const path = select(pathRef.current!)
-      .datum(initialData)
-      .transition()
-      // @ts-ignore
-      .attr("d", shape);
+    const newDomain = extent(data) as [number, number];
+    yScale.domain(newDomain);
+    select(pathRef.current!).datum(data).transition().attr("d", shape);
   }, [data]);
 
   useEffect(() => {
-    const path = select(pathRef.current).datum(data);
+    select(pathRef.current).datum(data);
   }, [data]);
 
   useEffect(() => {
-    console.log("Audio data", loadAudioData(file));
+    loadAudioData(file, SAMPLES).then((channels) => {
+      const consolidate = channels[0];
+      setData(consolidate);
+    });
   }, [file]);
 
   function shuffle() {
