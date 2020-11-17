@@ -6,14 +6,13 @@ import { loadAudioData } from "../util/sound";
  * @todo send the audio processing to a worker
  */
 
-const SAMPLES = 100;
+const SAMPLES = 240;
 
 const width = 1200;
 const height = 200;
 const margin = { top: 0, right: 0, bottom: 0, left: 0 };
 const innerWidth = width - margin.left - margin.right;
 const innerHeight = height - margin.top - margin.bottom;
-console.log({ margin, width, height, innerWidth, innerHeight });
 
 const xScale = scaleLinear()
   .domain([0, SAMPLES - 1])
@@ -35,16 +34,20 @@ export default function Curve({ file, currentTime, duration }: CurveProps) {
   const [data, setData] = useState(initialData);
   const pathRef = useRef<SVGPathElement>(null);
 
+  // create the initial graph
+  useEffect(() => {
+    const emptyData = Array(SAMPLES).fill(0);
+    select(pathRef.current!).datum(emptyData).transition().attr("d", shape);
+  }, []);
+
+  // update the graph when de data changes
   useEffect(() => {
     const newDomain = extent(data) as [number, number];
     yScale.domain(newDomain);
     select(pathRef.current!).datum(data).transition().attr("d", shape);
   }, [data]);
 
-  useEffect(() => {
-    select(pathRef.current).datum(data);
-  }, [data]);
-
+  // update data when file changes
   useEffect(() => {
     loadAudioData(file, SAMPLES).then((channels) => {
       const consolidate = channels[0];
@@ -52,7 +55,7 @@ export default function Curve({ file, currentTime, duration }: CurveProps) {
     });
   }, [file]);
 
-  // ---------------------------
+  // playhead
   const playheadRef = useRef<SVGLineElement>(null);
   const playheadScale = scaleLinear()
     .domain([0, duration])
