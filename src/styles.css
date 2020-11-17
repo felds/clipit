@@ -21,10 +21,3 @@ audio {
 .drop-area--rejected {
   border: medium dashed firebrick;
 }
-
-/* tchananan */
-.tchananan {
-  background: green;
-  width: 100%;
-  height: 200px;
-}

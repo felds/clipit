@@ -10,9 +10,10 @@ const SAMPLES = 100;
 
 const width = 1200;
 const height = 200;
-const margin = { top: 10, right: 10, bottom: 10, left: 10 };
+const margin = { top: 0, right: 0, bottom: 0, left: 0 };
 const innerWidth = width - margin.left - margin.right;
 const innerHeight = height - margin.top - margin.bottom;
+console.log({ margin, width, height, innerWidth, innerHeight });
 
 const xScale = scaleLinear()
   .domain([0, SAMPLES - 1])
@@ -26,8 +27,10 @@ const shape = area<number>()
 
 type CurveProps = {
   file: File;
+  currentTime: number;
+  duration: number;
 };
-export default function Curve({ file }: CurveProps) {
+export default function Curve({ file, currentTime, duration }: CurveProps) {
   const initialData = Array(SAMPLES).fill(0);
   const [data, setData] = useState(initialData);
   const pathRef = useRef<SVGPathElement>(null);
@@ -49,20 +52,31 @@ export default function Curve({ file }: CurveProps) {
     });
   }, [file]);
 
-  function shuffle() {
-    console.log("XUFULE");
-  }
+  // ---------------------------
+  const playheadRef = useRef<SVGLineElement>(null);
+  const playheadScale = scaleLinear()
+    .domain([0, duration])
+    .range([0, innerWidth]);
+  useEffect(() => {
+    select(playheadRef.current!)
+      .datum(currentTime)
+      .attr("x1", playheadScale)
+      .attr("x2", playheadScale)
+      .attr("y1", 0)
+      .attr("y2", innerHeight);
+  }, [currentTime, duration]);
+  // ---------------------------
 
   return (
     <svg
       width={width}
       height={height}
       viewBox={`0 0 ${width} ${height}`}
-      onClick={shuffle}
-      style={{ border: "1px solid orange" }}
+      style={{ background: "whitesmoke" }}
     >
       <g transform={`translate(${margin.left}, ${margin.top})`}>
-        <path ref={pathRef} fill="tomato" />
+        <path ref={pathRef} fill="rebeccapurple" />
+        <line ref={playheadRef} strokeWidth="2" stroke="black" />
       </g>
     </svg>
   );

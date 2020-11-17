@@ -68,7 +68,7 @@ export default function Clipper({ file }: ClipperProps) {
 
   return (
     <div className="clipper">
-      <Curve file={file} />
+      <Curve file={file} currentTime={currentTime} duration={duration} />
       <div className="clipper__view">
         View
         <br />
