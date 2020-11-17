@@ -1,4 +1,11 @@
-import { area, curveBasis, extent, scaleLinear, select } from "d3";
+import {
+  area,
+  curveBasis,
+  extent,
+  scaleLinear,
+  scaleOrdinal,
+  select,
+} from "d3";
 import React, { useEffect, useRef, useState } from "react";
 import { loadAudioData } from "../util/sound";
 
@@ -6,16 +13,16 @@ import { loadAudioData } from "../util/sound";
  * @todo send the audio processing to a worker
  */
 
-const SAMPLES = 240;
-
 const width = 1200;
 const height = 200;
 const margin = { top: 0, right: 0, bottom: 0, left: 0 };
 const innerWidth = width - margin.left - margin.right;
 const innerHeight = height - margin.top - margin.bottom;
+const numberOfSamples = width / 5;
 
+// d3 configs
 const xScale = scaleLinear()
-  .domain([0, SAMPLES - 1])
+  .domain([0, numberOfSamples - 1])
   .range([0, innerWidth]);
 const yScale = scaleLinear().domain([0, 10]).range([innerHeight, 0]);
 const shape = area<number>()
@@ -24,34 +31,54 @@ const shape = area<number>()
   .y1((d) => yScale(d))
   .curve(curveBasis);
 
+const colorScale = scaleOrdinal<number, string>(["#0050ff80", "#ff009080"]);
+
 type CurveProps = {
   file: File;
   currentTime: number;
   duration: number;
 };
 export default function Curve({ file, currentTime, duration }: CurveProps) {
-  const initialData = Array(SAMPLES).fill(0);
-  const [data, setData] = useState(initialData);
-  const pathRef = useRef<SVGPathElement>(null);
-
-  // create the initial graph
-  useEffect(() => {
-    const emptyData = Array(SAMPLES).fill(0);
-    select(pathRef.current!).datum(emptyData).transition().attr("d", shape);
-  }, []);
+  const [data, setData] = useState<number[][]>([]);
+  const pathsRef = useRef<SVGGElement>(null);
 
   // update the graph when de data changes
   useEffect(() => {
-    const newDomain = extent(data) as [number, number];
-    yScale.domain(newDomain);
-    select(pathRef.current!).datum(data).transition().attr("d", shape);
+    const dom = extent(data.flat(2)) as [number, number];
+    // const dom = [0, 0.2];
+    yScale.domain(dom);
+
+    // mix-blend-mode: normal;
+    // mix-blend-mode: multiply;
+    // mix-blend-mode: screen;
+    // mix-blend-mode: overlay;
+    // mix-blend-mode: darken;
+    // mix-blend-mode: lighten;
+    // mix-blend-mode: color-dodge;
+    // mix-blend-mode: color-burn;
+    // mix-blend-mode: hard-light;
+    // mix-blend-mode: soft-light;
+    // mix-blend-mode: difference;
+    // mix-blend-mode: exclusion;
+    // mix-blend-mode: hue;
+    // mix-blend-mode: saturation;
+    // mix-blend-mode: color;
+    // mix-blend-mode: luminosity;
+
+    select(pathsRef.current!)
+      .selectAll("path")
+      .data(data)
+      .join("path")
+      .transition()
+      .attr("d", shape)
+      .attr("fill", (d, i) => colorScale(i))
+      .style("mix-blend-mode", "multiply");
   }, [data]);
 
   // update data when file changes
   useEffect(() => {
-    loadAudioData(file, SAMPLES).then((channels) => {
-      const consolidate = channels[0];
-      setData(consolidate);
+    loadAudioData(file, numberOfSamples).then((channels) => {
+      setData(channels);
     });
   }, [file]);
 
@@ -78,7 +105,8 @@ export default function Curve({ file, currentTime, duration }: CurveProps) {
       style={{ background: "whitesmoke" }}
     >
       <g transform={`translate(${margin.left}, ${margin.top})`}>
-        <path ref={pathRef} fill="rebeccapurple" />
+        <g ref={pathsRef} />
+        {/* <path ref={pathRef} fill="rebeccapurple" /> */}
         <line ref={playheadRef} strokeWidth="2" stroke="black" />
       </g>
     </svg>
