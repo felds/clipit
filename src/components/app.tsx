@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from "react";
 import Clipper from "./clipper";
-import Curve from "./curve";
 import DropArea from "./droparea";
 
 export default function App() {
@@ -15,9 +14,9 @@ export default function App() {
     <div className="app">
       <DropArea onDrop={onDrop}>Larga a parada aqui</DropArea>
 
-      <Clipper />
+      {file && <Clipper file={file} />}
 
-      {file && <Curve file={file} />}
+      {/* {file && <Curve file={file} />} */}
     </div>
   );
 }

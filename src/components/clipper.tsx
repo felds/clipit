@@ -1,10 +1,9 @@
+import { isString } from "lodash";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { formatNumber } from "../util/formatting";
 
-const sampleSound = require("../assets/mima-rage-quit.mp3").default;
-
 type ClipperProps = {
-  file?: File;
+  file: string | File;
 };
 export default function Clipper({ file }: ClipperProps) {
   const [isPlaying, setPlaying] = useState(false);
@@ -48,7 +47,7 @@ export default function Clipper({ file }: ClipperProps) {
         audio.pause();
       }
     }
-  }, [currentTime]);
+  }, [currentTime, clipDuration, loop, startTime]);
 
   const updateMetadata = (e) => {
     const audio = audioRef.current!;
@@ -56,6 +55,20 @@ export default function Clipper({ file }: ClipperProps) {
     audio.currentTime = startTime;
     console.log({ startTime });
   };
+
+  useEffect(() => {
+    const audio = audioRef.current!;
+    if (isString(file)) {
+      audio.src = file;
+    } else {
+      audio.src = URL.createObjectURL(file);
+      const revokeUrl = () => {
+        URL.revokeObjectURL(audio.src);
+        audio.removeEventListener("load", revokeUrl);
+      };
+      audio.addEventListener("load", revokeUrl);
+    }
+  }, [file]);
 
   return (
     <div className="clipper">
@@ -68,7 +81,6 @@ export default function Clipper({ file }: ClipperProps) {
         <button onClick={updateMetadata}>shablau</button>
         <audio
           ref={audioRef}
-          src={sampleSound}
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
           onLoadedMetadata={updateMetadata}
@@ -82,7 +94,7 @@ export default function Clipper({ file }: ClipperProps) {
             onChange={(e) => setLoop(e.target.checked)}
             checked={loop}
           />
-          Repeat
+          Repeato
         </label>
         <p>
           <label>
