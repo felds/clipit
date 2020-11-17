@@ -77,9 +77,7 @@ export default function Curve({ file, currentTime, duration }: CurveProps) {
 
   // update data when file changes
   useEffect(() => {
-    loadAudioData(file, numberOfSamples).then((channels) => {
-      setData(channels);
-    });
+    loadAudioData(file, numberOfSamples).then(setData);
   }, [file]);
 
   // playhead
