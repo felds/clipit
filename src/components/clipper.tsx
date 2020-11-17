@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { formatNumber } from "../util/formatting";
-const sampleSound = require("../assets/mima-rage-quit.mp3");
+
+const sampleSound = require("../assets/mima-rage-quit.mp3").default;
 
 type ClipperProps = {
   file?: File;
