@@ -8,7 +8,7 @@ import { loadAudioData } from "../util/sound";
 
 const SAMPLES = 100;
 
-const width = 800;
+const width = 1200;
 const height = 200;
 const margin = { top: 10, right: 10, bottom: 10, left: 10 };
 const innerWidth = width - margin.left - margin.right;

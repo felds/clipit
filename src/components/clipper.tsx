@@ -1,9 +1,9 @@
-import { isString } from "lodash";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { formatNumber } from "../util/formatting";
+import Curve from "./curve";
 
 type ClipperProps = {
-  file: string | File;
+  file: File;
 };
 export default function Clipper({ file }: ClipperProps) {
   const [isPlaying, setPlaying] = useState(false);
@@ -58,20 +58,17 @@ export default function Clipper({ file }: ClipperProps) {
 
   useEffect(() => {
     const audio = audioRef.current!;
-    if (isString(file)) {
-      audio.src = file;
-    } else {
-      audio.src = URL.createObjectURL(file);
-      const revokeUrl = () => {
-        URL.revokeObjectURL(audio.src);
-        audio.removeEventListener("load", revokeUrl);
-      };
-      audio.addEventListener("load", revokeUrl);
-    }
+    audio.src = URL.createObjectURL(file);
+    const revokeUrl = () => {
+      URL.revokeObjectURL(audio.src);
+      audio.removeEventListener("load", revokeUrl);
+    };
+    audio.addEventListener("load", revokeUrl);
   }, [file]);
 
   return (
     <div className="clipper">
+      <Curve file={file} />
       <div className="clipper__view">
         View
         <br />
