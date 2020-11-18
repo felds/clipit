@@ -2,6 +2,7 @@ import {
   area,
   curveBasis,
   extent,
+  range,
   scaleLinear,
   scaleOrdinal,
   select,
@@ -31,7 +32,15 @@ const shape = area<number>()
   .y1((d) => yScale(d))
   .curve(curveBasis);
 
-const colorScale = scaleOrdinal<number, string>(["#0050ff80", "#ff009080"]);
+type Fill = {
+  color: string;
+  mixBlendMode: string;
+};
+const fillScale = scaleOrdinal<number, Fill>().range([
+  { color: "#6342bd", mixBlendMode: "normal" },
+  { color: "#0050ff80", mixBlendMode: "normal" },
+  { color: "#ff009080", mixBlendMode: "normal" },
+]);
 
 type CurveProps = {
   file: File;
@@ -45,25 +54,9 @@ export default function Curve({ file, currentTime, duration }: CurveProps) {
   // update the graph when de data changes
   useEffect(() => {
     const dom = extent(data.flat(2)) as [number, number];
-    // const dom = [0, 0.2];
     yScale.domain(dom);
-
-    // mix-blend-mode: normal;
-    // mix-blend-mode: multiply;
-    // mix-blend-mode: screen;
-    // mix-blend-mode: overlay;
-    // mix-blend-mode: darken;
-    // mix-blend-mode: lighten;
-    // mix-blend-mode: color-dodge;
-    // mix-blend-mode: color-burn;
-    // mix-blend-mode: hard-light;
-    // mix-blend-mode: soft-light;
-    // mix-blend-mode: difference;
-    // mix-blend-mode: exclusion;
-    // mix-blend-mode: hue;
-    // mix-blend-mode: saturation;
-    // mix-blend-mode: color;
-    // mix-blend-mode: luminosity;
+    fillScale.domain(range(data.length).reverse());
+    // fillScale.domain(range(data.length, 0))
 
     select(pathsRef.current!)
       .selectAll("path")
@@ -71,8 +64,8 @@ export default function Curve({ file, currentTime, duration }: CurveProps) {
       .join("path")
       .transition()
       .attr("d", shape)
-      .attr("fill", (d, i) => colorScale(i))
-      .style("mix-blend-mode", "multiply");
+      .attr("fill", (d, i) => fillScale(i).color);
+    // .style("mix-blend-mode", (d, i) => fillScale(i).mixBlendMode);
   }, [data]);
 
   // update data when file changes

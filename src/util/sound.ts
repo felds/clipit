@@ -1,3 +1,4 @@
+import * as _ from "lodash/fp";
 import { chunk, map, mean, pipe } from "lodash/fp";
 
 export const rms = pipe(
@@ -30,10 +31,19 @@ export const getChannels = async (file: File): Promise<number[][]> => {
   return channels;
 };
 
+// export const getBaseline = (channels: number[][]) => unzip(channels)
+const getBaseline = _.pipe(_.unzip, _.map(_.min), _.map(_.toNumber));
+
 export const loadAudioData = async (
   file: File,
   samples: number,
 ): Promise<number[][]> => {
   const audioData = await getChannels(file);
-  return audioData.map(processChannel(samples));
+  const processedChannels = audioData.map(processChannel(samples));
+
+  const baseline = getBaseline(processedChannels);
+
+  return processedChannels.length === 1
+    ? processedChannels
+    : [...processedChannels, getBaseline(processedChannels)];
 };
