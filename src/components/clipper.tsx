@@ -7,10 +7,10 @@ type ClipperProps = {
 };
 export default function Clipper({ file }: ClipperProps) {
   const [isPlaying, setPlaying] = useState(false);
-  const [startTime, setStartTime] = useState(2);
   const [duration, setDuration] = useState(0);
-  const [clipDuration, setClipDuration] = useState(1);
-  const [currentTime, setCurrentTime] = useState(0);
+  const [startTime, setStartTime] = useState(1.95);
+  const [clipDuration, setClipDuration] = useState(1.9);
+  const [currentTime, setCurrentTime] = useState(startTime);
   const [loop, setLoop] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement>(null);
