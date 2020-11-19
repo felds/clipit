@@ -41,8 +41,6 @@ export const loadAudioData = async (
   const audioData = await getChannels(file);
   const processedChannels = audioData.map(processChannel(samples));
 
-  const baseline = getBaseline(processedChannels);
-
   return processedChannels.length === 1
     ? processedChannels
     : [...processedChannels, getBaseline(processedChannels)];
