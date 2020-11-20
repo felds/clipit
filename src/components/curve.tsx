@@ -1,5 +1,6 @@
 import {
   area,
+  brushX,
   curveBasis,
   extent,
   range,
@@ -50,6 +51,7 @@ type CurveProps = {
 export default function Curve({ file, currentTime, duration }: CurveProps) {
   const [data, setData] = useState<number[][]>([]);
   const pathsRef = useRef<SVGGElement>(null);
+  const gRef = useRef<SVGGElement>(null);
 
   // update the graph when de data changes
   useEffect(() => {
@@ -85,7 +87,19 @@ export default function Curve({ file, currentTime, duration }: CurveProps) {
       .attr("x2", playheadScale)
       .attr("y1", 0)
       .attr("y2", innerHeight);
-  }, [currentTime, duration]);
+  }, [currentTime, duration, playheadScale]);
+
+  // brush
+  useEffect(() => {
+    select(gRef.current!).call(
+      brushX().extent([
+        [0, 0],
+        [innerWidth, innerHeight],
+      ]),
+    );
+  }, []);
+  // svg.append("g").attr("class", "brush").call(d3.brush().on("brush", brushed));
+
   // ---------------------------
 
   return (
@@ -97,8 +111,8 @@ export default function Curve({ file, currentTime, duration }: CurveProps) {
     >
       <g transform={`translate(${margin.left}, ${margin.top})`}>
         <g ref={pathsRef} />
-        {/* <path ref={pathRef} fill="rebeccapurple" /> */}
         <line ref={playheadRef} strokeWidth="2" stroke="black" />
+        <g ref={gRef} />
       </g>
     </svg>
   );

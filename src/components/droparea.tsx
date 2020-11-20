@@ -12,14 +12,14 @@ export default function DropArea({ children, onDrop }: DropAreaProps) {
     getInputProps,
     isDragActive,
     isDragReject,
-  } = useDropzone({ onDrop, accept: "audio/*", multiple: false });
+  } = useDropzone({ onDrop, accept: "audio/mpeg", multiple: false });
 
   return (
     <div
       className={classNames(
         "drop-area",
         isDragActive && "drop-area--active",
-        isDragReject && "drop-area--rejected"
+        isDragReject && "drop-area--rejected",
       )}
       {...getRootProps()}
     >
