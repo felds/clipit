@@ -51,7 +51,6 @@ type CurveProps = {
 export default function Curve({ file, currentTime, duration }: CurveProps) {
   const [data, setData] = useState<number[][]>([]);
   const pathsRef = useRef<SVGGElement>(null);
-  const gRef = useRef<SVGGElement>(null);
 
   // update the graph when de data changes
   useEffect(() => {
@@ -66,8 +65,8 @@ export default function Curve({ file, currentTime, duration }: CurveProps) {
       .join("path")
       .transition()
       .attr("d", shape)
-      .attr("fill", (d, i) => fillScale(i).color);
-    // .style("mix-blend-mode", (d, i) => fillScale(i).mixBlendMode);
+      .attr("fill", (d, i) => fillScale(i).color)
+      .style("mix-blend-mode", (d, i) => fillScale(i).mixBlendMode);
   }, [data]);
 
   // update data when file changes
@@ -90,16 +89,15 @@ export default function Curve({ file, currentTime, duration }: CurveProps) {
   }, [currentTime, duration, playheadScale]);
 
   // brush
+  const brushRef = useRef<SVGGElement>(null);
   useEffect(() => {
-    select(gRef.current!).call(
-      brushX().extent([
-        [0, 0],
-        [innerWidth, innerHeight],
-      ]),
-    );
+    const brush = brushX().extent([
+      [0, 0],
+      [innerWidth, innerHeight],
+    ]);
+    // brush.on("start brush end", (e) => console.log(e));
+    select(brushRef.current!).call(brush);
   }, []);
-  // svg.append("g").attr("class", "brush").call(d3.brush().on("brush", brushed));
-
   // ---------------------------
 
   return (
@@ -112,7 +110,7 @@ export default function Curve({ file, currentTime, duration }: CurveProps) {
       <g transform={`translate(${margin.left}, ${margin.top})`}>
         <g ref={pathsRef} />
         <line ref={playheadRef} strokeWidth="2" stroke="black" />
-        <g ref={gRef} />
+        <g ref={brushRef} />
       </g>
     </svg>
   );
