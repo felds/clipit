@@ -49,13 +49,7 @@ export default function Clipper({ file }: ClipperProps) {
     }
   }, [currentTime, clipDuration, loop, startTime]);
 
-  const updateMetadata = (e) => {
-    const audio = audioRef.current!;
-    setDuration(audio.duration);
-    audio.currentTime = startTime;
-    console.log({ startTime });
-  };
-
+  // load dropped file into the audio element
   useEffect(() => {
     const audio = audioRef.current!;
     audio.src = URL.createObjectURL(file);
@@ -65,6 +59,15 @@ export default function Clipper({ file }: ClipperProps) {
     };
     audio.addEventListener("load", revokeUrl);
   }, [file]);
+
+  const updateMetadata = (e) => {
+    const audio = audioRef.current!;
+    setDuration(audio.duration);
+    setStartTime(0);
+    setClipDuration(audio.duration);
+    audio.currentTime = startTime;
+    console.log({ startTime });
+  };
 
   return (
     <div className="clipper">
