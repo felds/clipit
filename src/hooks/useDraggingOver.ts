@@ -1,14 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-type FullScreenDropProps = {
-  children: React.ElementType;
-  [k: string]: any;
-};
-export default function FullScreenDrop({
-  children,
-  ...props
-}: FullScreenDropProps) {
-  const [isHidden, setHidden] = useState(true);
+export default function useDraggingOver() {
+  const [isDraggingOver, setDraggingOver] = useState(false);
 
   useEffect(() => {
     let dragCount = 0;
@@ -18,18 +11,18 @@ export default function FullScreenDrop({
     }
     function handleDragEnter(e: DragEvent) {
       dragCount++;
-      updateHidden();
+      update();
     }
     function handleDragLeave(e: DragEvent) {
       dragCount--;
-      updateHidden();
+      update();
     }
     function handleDrop(e: DragEvent) {
       dragCount = 0;
-      updateHidden();
+      update();
     }
-    function updateHidden() {
-      setHidden(dragCount < 1);
+    function update() {
+      setDraggingOver(dragCount > 0);
     }
 
     window.addEventListener("dragover", handleDragOver);
@@ -45,7 +38,5 @@ export default function FullScreenDrop({
     };
   }, []);
 
-  console.log(children);
-
-  return React.createElement(children, { ...props, isHidden });
+  return isDraggingOver;
 }
