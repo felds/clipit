@@ -1,6 +1,11 @@
 import * as _ from "lodash/fp";
 import { chunk, map, mean, pipe } from "lodash/fp";
 
+interface Window {
+  webkitAudioContext?: typeof AudioContext;
+}
+declare const window: Window;
+
 export const rms = pipe(
   map((x: number) => x * x),
   mean,
@@ -22,7 +27,9 @@ export const loadFileAsArrayBuffer = (file: File): Promise<ArrayBuffer> =>
 
 export const getChannels = async (file: File): Promise<number[][]> => {
   const channels: number[][] = [];
-  const audioContext = new AudioContext();
+  const audioContext = window.webkitAudioContext
+    ? new window.webkitAudioContext()
+    : new AudioContext();
   const buffer = await loadFileAsArrayBuffer(file);
   const audioData = await audioContext.decodeAudioData(buffer);
   for (let i = 0; i < audioData.numberOfChannels; i++) {
