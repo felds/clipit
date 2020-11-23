@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
 import Clipper from "./clipper";
 import DropArea from "./droparea";
+import FullScreenDrop from "./full-screen-drop";
 
 export default function App() {
   const [file, setFile] = useState<File | null>(null);
@@ -12,7 +13,13 @@ export default function App() {
 
   return (
     <div className="app">
-      <DropArea onDrop={onDrop}>Larga a parada aqui</DropArea>
+      <FullScreenDrop>
+        {({ isHidden }) => (
+          <DropArea isHidden={isHidden} onDrop={onDrop}>
+            🔥 drop it like it's hot 🔥
+          </DropArea>
+        )}
+      </FullScreenDrop>
 
       {file && <Clipper file={file} />}
 

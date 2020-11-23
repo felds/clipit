@@ -4,9 +4,14 @@ import { useDropzone } from "react-dropzone";
 
 type DropAreaProps = {
   children: React.ReactNode;
+  isHidden: boolean;
   onDrop: (acceptedFiles: File[]) => void;
 };
-export default function DropArea({ children, onDrop }: DropAreaProps) {
+export default function DropArea({
+  children,
+  onDrop,
+  isHidden,
+}: DropAreaProps) {
   const {
     getRootProps,
     getInputProps,
@@ -20,6 +25,7 @@ export default function DropArea({ children, onDrop }: DropAreaProps) {
         "drop-area",
         isDragActive && "drop-area--active",
         isDragReject && "drop-area--rejected",
+        isHidden && "drop-area--hidden",
       )}
       {...getRootProps()}
     >

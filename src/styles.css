@@ -5,6 +5,9 @@ html {
 * {
   box-sizing: inherit;
 }
+[hidden] {
+  visibility: hidden !important;
+}
 
 audio {
   width: 100%;
@@ -12,12 +15,31 @@ audio {
 
 /* drop-area */
 .drop-area {
-  border: medium dashed rgb(204, 212, 222);
-  padding: 4rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.9;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  font-size: 3rem;
+  color: white;
+  will-change: opacity, background-color;
+  transition: opacity 200ms, background-color 200ms;
+}
+.drop-area--hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 .drop-area--active {
-  border: medium dashed rgb(35, 198, 114);
+  background: rgba(12, 216, 111, 0.769);
+  opacity: 1;
+  pointer-events: all;
 }
 .drop-area--rejected {
-  border: medium dashed firebrick;
+  background: rgba(220, 20, 60, 0.783);
+  opacity: 1;
+  pointer-events: all;
 }
