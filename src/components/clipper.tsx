@@ -13,7 +13,21 @@ export default function Clipper({ file }: ClipperProps) {
   const [currentTime, setCurrentTime] = useState(startTime);
   const [loop, setLoop] = useState(false);
 
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const updateMetadata = (e) => {
+    const audio = audioRef.current!;
+    setDuration(audio.duration);
+    setStartTime(0);
+    setClipDuration(audio.duration);
+    audio.currentTime = startTime;
+    console.log({ startTime });
+  };
+
+  const audioRef = useRef<HTMLAudioElement>(new Audio());
+  useEffect(() => {
+    audioRef.current!.onloadedmetadata = updateMetadata;
+    audioRef.current!.onplay = () => setPlaying(true);
+    audioRef.current!.onpause = () => setPlaying(false);
+  });
 
   const playPause = useCallback(() => {
     const audio = audioRef.current!;
@@ -60,41 +74,21 @@ export default function Clipper({ file }: ClipperProps) {
     audio.addEventListener("load", revokeUrl);
   }, [file]);
 
-  const updateMetadata = (e) => {
-    const audio = audioRef.current!;
-    setDuration(audio.duration);
-    setStartTime(0);
-    setClipDuration(audio.duration);
-    audio.currentTime = startTime;
-    console.log({ startTime });
-  };
-
   return (
     <div className="clipper">
-      <Curve file={file} currentTime={currentTime} duration={duration} />
       <div className="clipper__view">
-        View
-        <br />
-        Current time: {formatNumber(currentTime)}
+        <Curve file={file} currentTime={currentTime} duration={duration} />
       </div>
       <div className="clipper__controls">
-        <button onClick={updateMetadata}>shablau</button>
-        <audio
-          ref={audioRef}
-          onPlay={() => setPlaying(true)}
-          onPause={() => setPlaying(false)}
-          onLoadedMetadata={updateMetadata}
-          controls
-        ></audio>
-        <button onClick={playPause}>Play/pause</button>
-        tocando: {isPlaying ? "s" : "n"}
+        <button onClick={playPause}>{isPlaying ? "Pause" : "Play"}</button>
+        <br />
         <label>
           <input
             type="checkbox"
             onChange={(e) => setLoop(e.target.checked)}
             checked={loop}
           />
-          Repeato
+          Repeat
         </label>
         <p>
           <label>
