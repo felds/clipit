@@ -5,8 +5,39 @@ html {
 * {
   box-sizing: inherit;
 }
+body {
+  margin: 0;
+}
+
 [hidden] {
   visibility: hidden !important;
+}
+
+/* utility classes */
+.text--center {
+  text-align: center;
+}
+
+/* buttons */
+.btn,
+button {
+  padding: 1rem 2rem;
+  display: inline-block;
+  background: white;
+  border: thin solid #939393;
+  border-radius: 0.5rem;
+  border-bottom-width: 3px;
+  font: inherit;
+  cursor: pointer;
+}
+.btn--wide {
+  padding: 1rem 6rem;
+}
+
+/* layout */
+.layout {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 audio {
@@ -42,4 +73,15 @@ audio {
   background: rgba(220, 20, 60, 0.783);
   opacity: 1;
   pointer-events: all;
+}
+
+/* begin */
+.begin {
+  margin: 4rem 0 8rem;
+  background: whitesmoke;
+  padding: 0 2rem;
+  overflow: hidden;
+}
+.begin p {
+  margin: 4rem 0;
 }

@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import React from "react";
 import { useDropzone } from "react-dropzone";
+import { dropzone } from "../settings";
 
 type DropAreaProps = {
   children: React.ReactNode;
@@ -17,7 +18,7 @@ export default function DropArea({
     getInputProps,
     isDragActive,
     isDragReject,
-  } = useDropzone({ onDrop, accept: "audio/mpeg", multiple: false });
+  } = useDropzone({ ...dropzone, onDrop });
 
   return (
     <div
