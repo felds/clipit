@@ -21,17 +21,34 @@ body {
 /* buttons */
 .btn,
 button {
-  padding: 1rem 2rem;
+  padding: 0.5rem 2rem;
   display: inline-block;
   background: white;
   border: thin solid #939393;
   border-radius: 0.5rem;
-  border-bottom-width: 3px;
+  box-shadow: inset 0 -2px 0 #93939350;
   font: inherit;
   cursor: pointer;
 }
+.btn:hover,
+.btn:focus,
+button:hover,
+button:focus {
+  /* background: red; */
+}
 .btn--wide {
   padding: 1rem 6rem;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+:focus-visible {
+  outline: 4px dashed darkorange;
+}
+
+:focus-ring {
+  background: limegreen;
 }
 
 /* layout */
