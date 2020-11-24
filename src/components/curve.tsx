@@ -1,13 +1,4 @@
-import {
-  area,
-  brushX,
-  curveBasis,
-  extent,
-  range,
-  scaleLinear,
-  scaleOrdinal,
-  select,
-} from "d3";
+import { area, brushX, curveBasis, extent, scaleLinear, select } from "d3";
 import React, { useEffect, useRef, useState } from "react";
 import { loadAudioData } from "../util/sound";
 
@@ -17,7 +8,7 @@ import { loadAudioData } from "../util/sound";
 
 const width = 1200;
 const height = 120;
-const margin = { top: 5, right: 5, bottom: 5, left: 5 };
+const margin = { top: 0, right: 0, bottom: 0, left: 0 };
 const innerWidth = width - margin.left - margin.right;
 const innerHeight = height - margin.top - margin.bottom;
 const numberOfSamples = width / 5;
@@ -33,16 +24,6 @@ const shape = area<number>()
   .y1((d) => yScale(d))
   .curve(curveBasis);
 
-type Fill = {
-  color: string;
-  mixBlendMode: string;
-};
-const fillScale = scaleOrdinal<number, Fill>().range([
-  { color: "#6342bd", mixBlendMode: "normal" },
-  { color: "#0050ff80", mixBlendMode: "normal" },
-  { color: "#ff009080", mixBlendMode: "normal" },
-]);
-
 type CurveProps = {
   file: File;
   currentTime: number;
@@ -56,17 +37,13 @@ export default function Curve({ file, currentTime, duration }: CurveProps) {
   useEffect(() => {
     const dom = extent(data.flat(2)) as [number, number];
     yScale.domain(dom);
-    fillScale.domain(range(data.length).reverse());
-    // fillScale.domain(range(data.length, 0))
 
     select(pathsRef.current!)
       .selectAll("path")
       .data(data)
       .join("path")
       .transition()
-      .attr("d", shape)
-      .attr("fill", (d, i) => fillScale(i).color)
-      .style("mix-blend-mode", (d, i) => fillScale(i).mixBlendMode);
+      .attr("d", shape);
   }, [data]);
 
   // update data when file changes
@@ -78,7 +55,7 @@ export default function Curve({ file, currentTime, duration }: CurveProps) {
   const playheadRef = useRef<SVGLineElement>(null);
   const playheadScale = scaleLinear()
     .domain([0, duration])
-    .range([0, innerWidth]);
+    .range([1, innerWidth - 1]);
   useEffect(() => {
     select(playheadRef.current!)
       .datum(currentTime)
@@ -105,11 +82,11 @@ export default function Curve({ file, currentTime, duration }: CurveProps) {
       width={width}
       height={height}
       viewBox={`0 0 ${width} ${height}`}
-      style={{ background: "whitesmoke" }}
+      className="curve"
     >
       <g transform={`translate(${margin.left}, ${margin.top})`}>
-        <g ref={pathsRef} />
-        <line ref={playheadRef} strokeWidth="2" stroke="black" />
+        <g ref={pathsRef} className="curve__paths" />
+        <line ref={playheadRef} className="curve__playhead" />
         <g ref={brushRef} />
       </g>
     </svg>

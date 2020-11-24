@@ -1,21 +1,25 @@
 :root {
-  --color-1: #ef476f;
-  --color-2: #ffd166;
-  --color-3: #06d6a0;
-  --color-4: #118ab2;
-  --color-5: #073b4c;
+  /* https://colordrop.io/color/17947 */
+  --color-1: #8134af;
+  --color-2: #2b3ae1;
+  --color-3: #da116b;
+  --color-text: #333;
+  --color-bg: #fff;
 }
 html {
-  font: 16px/24px sans-serif;
+  font: 16px/24px Futura, sans-serif;
   box-sizing: border-box;
-  color: white;
-  background-color: #073b4c;
+  color: var(--color-text);
+  background: var(--color-bg);
 }
 * {
   box-sizing: inherit;
 }
 body {
   margin: 0;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
 }
 body::after {
   content: "";
@@ -38,6 +42,10 @@ body::after {
     var(--color-5) 80%,
     var(--color-5) 100%
   );
+}
+h1 {
+  font-size: 3rem;
+  font-weight: 300;
 }
 
 [hidden] {
@@ -156,4 +164,25 @@ audio {
 }
 .begin p {
   margin: 4rem 0;
+}
+
+.curve {
+  /* background: var(--color-4); */
+}
+.curve__paths path:nth-last-child(1) {
+  fill: var(--color-1);
+}
+.curve__paths path:nth-last-child(2) {
+  fill: var(--color-2);
+  opacity: 0.5;
+  /* fill: none; */
+}
+.curve__paths path:nth-last-child(3) {
+  fill: var(--color-3);
+  opacity: 0.5;
+  /* fill: none; */
+}
+.curve__playhead {
+  stroke-width: 2;
+  stroke: var(--color-text);
 }
