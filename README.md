@@ -11,5 +11,6 @@ This is the product of my studies on how to read, manipulate and plot sound usin
 - [ ] Move the audio processing to a higher level component so it can be used by multiple visualizations
 - [ ] Make it work on Safari
 - [ ] Allow putting the playhead anywhere without clearing the brush
+- [ ] Sync the current time with the start time when the lather changes
 
 ### Done
