@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { formatNumber } from "../util/formatting";
 import Curve from "./curve";
+import ToggleButton from "./toggle-button";
 
 type ClipperProps = {
   file: File;
@@ -80,16 +81,18 @@ export default function Clipper({ file }: ClipperProps) {
         <Curve file={file} currentTime={currentTime} duration={duration} />
       </div>
       <div className="clipper__controls">
-        <button onClick={playPause}>{isPlaying ? "Pause" : "Play"}</button>
-        <br />
-        <label>
-          <input
-            type="checkbox"
-            onChange={(e) => setLoop(e.target.checked)}
-            checked={loop}
-          />
-          Repeat
-        </label>
+        <ToggleButton
+          status={isPlaying}
+          onContent="Pause"
+          offContent="Play"
+          onChange={playPause}
+        />{" "}
+        <ToggleButton
+          status={loop}
+          onContent="Repeat"
+          offContent="Repeat"
+          onChange={(loop) => setLoop(loop)}
+        />
         <p>
           <label>
             Start time ({formatNumber(startTime)}) <br />
