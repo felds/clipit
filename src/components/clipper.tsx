@@ -10,7 +10,7 @@ type ClipperProps = {
 export default function Clipper({ file }: ClipperProps) {
   const [isPlaying, setPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
-  const [startTime, setStartTime] = useState(1.95);
+  const [startTime, setStartTime] = useState(0);
   const [clipDuration, setClipDuration] = useState(1.9);
   const [currentTime, setCurrentTime] = useState(startTime);
   const [loop, setLoop] = useState(false);
@@ -21,7 +21,6 @@ export default function Clipper({ file }: ClipperProps) {
     setStartTime(0);
     setClipDuration(audio.duration);
     audio.currentTime = startTime;
-    console.log({ startTime });
   };
 
   const audioRef = useRef<HTMLAudioElement>(new Audio());
@@ -75,6 +74,13 @@ export default function Clipper({ file }: ClipperProps) {
     };
     audio.addEventListener("load", revokeUrl);
   }, [file]);
+
+  // sync current time with start time
+  useEffect(() => {
+    const audio = audioRef.current!;
+    setCurrentTime(startTime);
+    audio.currentTime = startTime;
+  }, [startTime]);
 
   return (
     <div className="clipper">
