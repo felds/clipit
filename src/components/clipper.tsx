@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { IoIosInfinite, IoIosPlay } from "react-icons/io";
 import { formatNumber } from "../util/formatting";
 import Curve from "./curve";
 import ToggleButton from "./toggle-button";
@@ -83,43 +84,44 @@ export default function Clipper({ file }: ClipperProps) {
       <div className="clipper__controls">
         <ToggleButton
           status={isPlaying}
-          onContent="Pause"
-          offContent="Play"
+          onContent={<IoIosPlay />}
+          offContent={<IoIosPlay />}
           onChange={playPause}
         />{" "}
         <ToggleButton
           status={loop}
-          onContent="Repeat"
-          offContent="Repeat"
+          onContent={<IoIosInfinite />}
+          offContent={<IoIosInfinite />}
           onChange={(loop) => setLoop(loop)}
         />
-        <p>
-          <label>
-            Start time ({formatNumber(startTime)}) <br />
-            <input
-              type="range"
-              value={startTime}
-              min={0}
-              max={duration}
-              step="any"
-              onChange={(e) => setStartTime(Number(e.target.value))}
-            />
-          </label>
-        </p>
-        <p>
-          <label>
-            Clip duration ({formatNumber(clipDuration)})<br />
-            <input
-              type="range"
-              value={clipDuration}
-              min={0}
-              max={duration - startTime}
-              step="any"
-              onChange={(e) => setClipDuration(Number(e.target.value))}
-            />
-          </label>
-        </p>
       </div>
+
+      <p>
+        <label>
+          Start time ({formatNumber(startTime)}) <br />
+          <input
+            type="range"
+            value={startTime}
+            min={0}
+            max={duration}
+            step="any"
+            onChange={(e) => setStartTime(Number(e.target.value))}
+          />
+        </label>
+      </p>
+      <p>
+        <label>
+          Clip duration ({formatNumber(clipDuration)})<br />
+          <input
+            type="range"
+            value={clipDuration}
+            min={0}
+            max={duration - startTime}
+            step="any"
+            onChange={(e) => setClipDuration(Number(e.target.value))}
+          />
+        </label>
+      </p>
     </div>
   );
 }

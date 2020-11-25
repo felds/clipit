@@ -69,19 +69,14 @@ button {
   font: inherit;
   cursor: pointer;
 }
-.btn:hover,
-.btn:focus,
-button:hover,
-button:focus {
-  /* background: red; */
+
+.btn--toggle svg {
+  transform: scale(2);
 }
 .btn--wide {
   padding: 1rem 6rem;
 }
-.btn--toggle:active {
-  color: var(--color-text) !important;
-}
-.btn--toggle.btn--off:not(:active) {
+.btn--toggle.btn--off {
   padding-bottom: 0.75rem;
   margin-top: -0.25rem;
   vertical-align: bottom;
@@ -197,4 +192,8 @@ audio {
 .curve__playhead {
   stroke-width: 2;
   stroke: var(--color-text);
+}
+
+.clipper__controls {
+  margin: 1rem 0 2rem;
 }

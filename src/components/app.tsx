@@ -26,9 +26,8 @@ export default function App() {
                 também pode arrastar e soltar o arquivo em qualquer lugar da
                 página.
               </p>
-              <p>
-                <SelectFile onDrop={onDrop} />
-              </p>
+              <SelectFile onDrop={onDrop} />
+              <p></p>
             </div>
           )}
           {file && <Clipper file={file} />}
