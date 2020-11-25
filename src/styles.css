@@ -21,26 +21,20 @@ body {
   place-items: center;
   min-height: 100vh;
 }
-body::after {
+body::before {
   content: "";
   position: absolute;
-  bottom: 0;
+  top: 0;
   display: block;
-  height: 1rem;
+  height: 0.5rem;
   width: 100%;
-  background-color: #f00;
   background: linear-gradient(
     to right,
     var(--color-1),
-    var(--color-1) 20%,
-    var(--color-2) 20%,
-    var(--color-2) 40%,
-    var(--color-3) 40%,
-    var(--color-3) 60%,
-    var(--color-4) 60%,
-    var(--color-4) 80%,
-    var(--color-5) 80%,
-    var(--color-5) 100%
+    var(--color-1) 33%,
+    var(--color-2) 33%,
+    var(--color-2) 66%,
+    var(--color-3) 66%
   );
 }
 h1 {
