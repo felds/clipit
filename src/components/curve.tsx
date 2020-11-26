@@ -18,6 +18,7 @@ const xScale = scaleLinear()
   .domain([0, numberOfSamples - 1])
   .range([0, innerWidth]);
 const yScale = scaleLinear().domain([0, 10]).range([innerHeight, 0]);
+const timeScale = scaleLinear().domain([0, innerWidth]).range([0, 1]);
 const shape = area<number>()
   .x((_, i) => xScale(i))
   .y0(innerHeight)
@@ -28,8 +29,14 @@ type CurveProps = {
   file: File;
   currentTime: number;
   duration: number;
+  onSelect?(range: [start: number, end: number]): void;
 };
-export default function Curve({ file, currentTime, duration }: CurveProps) {
+export default function Curve({
+  file,
+  currentTime,
+  duration,
+  onSelect,
+}: CurveProps) {
   const [data, setData] = useState<number[][]>([]);
   const pathsRef = useRef<SVGGElement>(null);
 
@@ -72,7 +79,13 @@ export default function Curve({ file, currentTime, duration }: CurveProps) {
       [0, 0],
       [innerWidth, innerHeight],
     ]);
-    // brush.on("start brush end", (e) => console.log(e));
+    brush.on("start brush end", ({ selection }) => {
+      console.log(selection);
+      // console.log(selection, selection.map(timeScale));
+      // const xaba = selection.map(d => )
+
+      // const [x0, x1] = selection.map(d => interval.round(x.invert(d)));
+    });
     select(brushRef.current!).call(brush);
   }, []);
   // ---------------------------
