@@ -81,10 +81,26 @@ export default function Clipper({ file }: ClipperProps) {
     audio.currentTime = startTime;
   }, [startTime]);
 
+  const handleSelection = (range: [start: number, end: number] | null) => {
+    console.log({ range });
+    if (!range) {
+      setStartTime(0);
+      setClipDuration(duration);
+    } else {
+      setStartTime(range[0] * duration);
+      // setClipDuration(duration);
+    }
+  };
+
   return (
     <div className="clipper">
       <div className="clipper__view">
-        <Curve file={file} currentTime={currentTime} duration={duration} />
+        <Curve
+          file={file}
+          currentTime={currentTime}
+          duration={duration}
+          onSelect={handleSelection}
+        />
         <audio ref={audioRef} controls />
       </div>
       <div className="clipper__controls">
