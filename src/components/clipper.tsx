@@ -23,7 +23,7 @@ export default function Clipper({ file }: ClipperProps) {
     audio.currentTime = startTime;
   };
 
-  const audioRef = useRef<HTMLAudioElement>(new Audio());
+  const audioRef = useRef<HTMLAudioElement>(null);
   useEffect(() => {
     audioRef.current!.onloadedmetadata = updateMetadata;
     audioRef.current!.onplay = () => setPlaying(true);
@@ -86,6 +86,7 @@ export default function Clipper({ file }: ClipperProps) {
     <div className="clipper">
       <div className="clipper__view">
         <Curve file={file} currentTime={currentTime} duration={duration} />
+        <audio ref={audioRef} controls />
       </div>
       <div className="clipper__controls">
         <ToggleButton
