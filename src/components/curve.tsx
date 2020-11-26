@@ -29,7 +29,7 @@ type CurveProps = {
   file: File;
   currentTime: number;
   duration: number;
-  onSelect?(range: [start: number, end: number]): void;
+  onSelect?(range: [start: number, end: number] | null): void;
 };
 export default function Curve({
   file,
@@ -79,15 +79,16 @@ export default function Curve({
       [0, 0],
       [innerWidth, innerHeight],
     ]);
-    brush.on("start brush end", ({ selection }) => {
-      console.log(selection);
-      // console.log(selection, selection.map(timeScale));
-      // const xaba = selection.map(d => )
-
-      // const [x0, x1] = selection.map(d => interval.round(x.invert(d)));
+    brush.on("start brush end", (e) => {
+      if (!onSelect) return;
+      if (Array.isArray(e.selection)) {
+        onSelect(e.selection.map(timeScale));
+      } else {
+        onSelect(null);
+      }
     });
     select(brushRef.current!).call(brush);
-  }, []);
+  }, [onSelect]);
   // ---------------------------
 
   return (
