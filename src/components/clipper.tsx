@@ -78,7 +78,6 @@ export default function Clipper({ file }: ClipperProps) {
   // sync current time with start time
   useEffect(() => {
     const audio = audioRef.current!;
-    setCurrentTime(startTime);
     audio.currentTime = startTime;
   }, [startTime]);
 
