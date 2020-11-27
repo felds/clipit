@@ -11,7 +11,7 @@ export default function Clipper({ file }: ClipperProps) {
   const [isPlaying, setPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [startTime, setStartTime] = useState(0);
-  const [clipDuration, setClipDuration] = useState(1.9);
+  const [endTime, setEndTime] = useState(0);
   const [currentTime, setCurrentTime] = useState(startTime);
   const [loop, setLoop] = useState(false);
 
@@ -19,7 +19,6 @@ export default function Clipper({ file }: ClipperProps) {
     const audio = audioRef.current!;
     setDuration(audio.duration);
     setStartTime(0);
-    setClipDuration(audio.duration);
     audio.currentTime = startTime;
   };
 
@@ -56,13 +55,13 @@ export default function Clipper({ file }: ClipperProps) {
   // go back to start time after playing
   useEffect(() => {
     const audio = audioRef.current!;
-    if (currentTime >= startTime + clipDuration) {
+    if (currentTime >= endTime) {
       audio.currentTime = startTime;
       if (!loop) {
         audio.pause();
       }
     }
-  }, [currentTime, clipDuration, loop, startTime]);
+  }, [currentTime, endTime, loop, startTime]);
 
   // load dropped file into the audio element
   useEffect(() => {
@@ -82,13 +81,12 @@ export default function Clipper({ file }: ClipperProps) {
   }, [startTime]);
 
   const handleSelection = (range: [start: number, end: number] | null) => {
-    console.log({ range });
     if (!range) {
       setStartTime(0);
-      setClipDuration(duration);
+      setEndTime(duration);
     } else {
       setStartTime(range[0] * duration);
-      // setClipDuration(duration);
+      setEndTime(range[1] * duration);
     }
   };
 
@@ -133,14 +131,14 @@ export default function Clipper({ file }: ClipperProps) {
       </p>
       <p>
         <label>
-          Clip duration ({formatNumber(clipDuration)})<br />
+          End time ({formatNumber(endTime)})<br />
           <input
             type="range"
-            value={clipDuration}
+            value={endTime}
             min={0}
-            max={duration - startTime}
+            max={duration}
             step="any"
-            onChange={(e) => setClipDuration(Number(e.target.value))}
+            onChange={(e) => setEndTime(Number(e.target.value))}
           />
         </label>
       </p>
