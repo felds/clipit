@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { IoIosInfinite, IoIosPlay } from "react-icons/io";
-import { formatNumber } from "../util/formatting";
 import Curve from "./curve";
 import ToggleButton from "./toggle-button";
 
@@ -115,33 +114,6 @@ export default function Clipper({ file }: ClipperProps) {
           onChange={(loop) => setLoop(loop)}
         />
       </div>
-
-      <p>
-        <label>
-          Start time ({formatNumber(startTime)}) <br />
-          <input
-            type="range"
-            value={startTime}
-            min={0}
-            max={duration}
-            step="any"
-            onChange={(e) => setStartTime(Number(e.target.value))}
-          />
-        </label>
-      </p>
-      <p>
-        <label>
-          End time ({formatNumber(endTime)})<br />
-          <input
-            type="range"
-            value={endTime}
-            min={0}
-            max={duration}
-            step="any"
-            onChange={(e) => setEndTime(Number(e.target.value))}
-          />
-        </label>
-      </p>
     </div>
   );
 }
