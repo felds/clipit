@@ -1,3 +1,4 @@
+import Slider from "@material-ui/core/Slider";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { IoIosInfinite, IoIosPlay } from "react-icons/io";
 import Curve from "./curve";
@@ -17,6 +18,7 @@ export default function Clipper({ file }: ClipperProps) {
   const updateMetadata = (e) => {
     const audio = audioRef.current!;
     setDuration(audio.duration);
+    setTrim([0, duration]);
     setStartTime(0);
     audio.currentTime = startTime;
   };
@@ -89,6 +91,8 @@ export default function Clipper({ file }: ClipperProps) {
     }
   };
 
+  const [trim, setTrim] = useState([0, 100]);
+
   return (
     <div className="clipper">
       <div className="clipper__view">
@@ -97,6 +101,13 @@ export default function Clipper({ file }: ClipperProps) {
           currentTime={currentTime}
           duration={duration}
           onSelect={handleSelection}
+        />
+        <Slider
+          value={trim}
+          onChange={(e, newValue) => setTrim(newValue as [number, number])}
+          min={0}
+          max={duration}
+          step={0.001}
         />
         <audio ref={audioRef} controls />
       </div>
