@@ -1,4 +1,4 @@
-import { area, brushX, curveBasis, extent, scaleLinear, select } from "d3";
+import { area, curveBasis, extent, scaleLinear, select } from "d3";
 import React, { useEffect, useRef, useState } from "react";
 import { loadAudioData } from "../util/sound";
 
@@ -18,7 +18,6 @@ const xScale = scaleLinear()
   .domain([0, numberOfSamples - 1])
   .range([0, innerWidth]);
 const yScale = scaleLinear().domain([0, 10]).range([innerHeight, 0]);
-const timeScale = scaleLinear().domain([0, innerWidth]).range([0, 1]);
 const shape = area<number>()
   .x((_, i) => xScale(i))
   .y0(innerHeight)
@@ -29,13 +28,13 @@ type CurveProps = {
   file: File;
   currentTime: number;
   duration: number;
-  onSelect?(range: [start: number, end: number] | null): void;
+  trim: [start: number, end: number];
 };
 export default function Curve({
   file,
   currentTime,
   duration,
-  onSelect,
+  trim,
 }: CurveProps) {
   const [data, setData] = useState<number[][]>([]);
   const pathsRef = useRef<SVGGElement>(null);
@@ -72,23 +71,23 @@ export default function Curve({
       .attr("y2", innerHeight);
   }, [currentTime, duration, playheadScale]);
 
-  // brush
-  const brushRef = useRef<SVGGElement>(null);
+  // mask
+  const startMaskRef = useRef<SVGRectElement>(null);
+  const endMaskRef = useRef<SVGRectElement>(null);
   useEffect(() => {
-    const brush = brushX().extent([
-      [0, 0],
-      [innerWidth, innerHeight],
-    ]);
-    brush.on("start brush end", (e) => {
-      if (!onSelect) return;
-      if (Array.isArray(e.selection)) {
-        onSelect(e.selection.map(timeScale));
-      } else {
-        onSelect(null);
-      }
-    });
-    select(brushRef.current!).call(brush);
-  }, [onSelect]);
+    const durationScale = scaleLinear([0, duration], [0, innerWidth]);
+    const [start, end] = trim;
+    const startMask = startMaskRef.current;
+    const endMask = endMaskRef.current;
+
+    select(startMask)
+      .datum(start)
+      .attr("width", (d) => durationScale(d));
+    select(endMask)
+      .datum(end)
+      .attr("x", (d) => durationScale(d))
+      .attr("width", (d) => durationScale(duration - d));
+  }, [trim, duration]);
   // ---------------------------
 
   return (
@@ -98,10 +97,71 @@ export default function Curve({
       viewBox={`0 0 ${width} ${height}`}
       className="curve"
     >
+      <defs>
+        <g id="filterMask">
+          <rect x="0" y="0" width="0" height="500" ref={startMaskRef} />
+          <rect x="1200" y="0" width="500" height="500" ref={endMaskRef} />
+        </g>
+
+        <filter id="filter" colorInterpolationFilters="linearRGB">
+          <feImage id="feimage" href="#filterMask" x="0" y="0" result="mask" />
+          <feFlood
+            floodColor="#ffffff"
+            floodOpacity="1"
+            x="0%"
+            y="0%"
+            width="100%"
+            height="100%"
+            result="flood"
+          />
+          <feBlend
+            mode="color"
+            x="0%"
+            y="0%"
+            width="100%"
+            height="100%"
+            in="flood"
+            in2="SourceGraphic"
+            result="blend"
+          />
+          <feFlood
+            floodColor="#ffffff"
+            floodOpacity="0.666"
+            x="0%"
+            y="0%"
+            width="100%"
+            height="100%"
+            result="flood1"
+          />
+          <feBlend
+            mode="screen"
+            x="0%"
+            y="0%"
+            width="100%"
+            height="100%"
+            in="blend"
+            in2="flood1"
+            result="blend1"
+          />
+          <feComposite in2="mask" in="blend1" operator="in" result="comp" />
+          <feMerge result="merge">
+            <feMergeNode in="SourceGraphic" />
+            <feMergeNode in="comp" />
+          </feMerge>
+        </filter>
+      </defs>
+
       <g transform={`translate(${margin.left}, ${margin.top})`}>
-        <g ref={pathsRef} className="curve__paths" />
+        <g ref={pathsRef} className="curve__paths" filter="url(#filter)">
+          <rect
+            x="0"
+            y="0"
+            width={innerWidth}
+            height={innerHeight}
+            fill="whitesmoke"
+          />
+        </g>
         <line ref={playheadRef} className="curve__playhead" />
-        <g ref={brushRef} />
       </g>
     </svg>
   );

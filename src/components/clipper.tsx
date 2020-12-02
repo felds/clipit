@@ -15,12 +15,12 @@ export default function Clipper({ file }: ClipperProps) {
   const [currentTime, setCurrentTime] = useState(startTime);
   const [loop, setLoop] = useState(false);
 
-  const updateMetadata = (e) => {
+  const updateMetadata = () => {
     const audio = audioRef.current!;
     setDuration(audio.duration);
-    setTrim([0, duration]);
+    setEndTime(audio.duration);
     setStartTime(0);
-    audio.currentTime = startTime;
+    audio.currentTime = 0;
   };
 
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -91,8 +91,6 @@ export default function Clipper({ file }: ClipperProps) {
     }
   };
 
-  const [trim, setTrim] = useState([0, 100]);
-
   return (
     <div className="clipper">
       <div className="clipper__view">
@@ -100,17 +98,22 @@ export default function Clipper({ file }: ClipperProps) {
           file={file}
           currentTime={currentTime}
           duration={duration}
-          onSelect={handleSelection}
+          trim={[startTime, endTime]}
         />
         <Slider
-          value={trim}
-          onChange={(e, newValue) => setTrim(newValue as [number, number])}
+          value={[startTime, endTime]}
+          onChange={(e, newValue) => {
+            const [start, end] = newValue as [number, number];
+            setStartTime(start);
+            setEndTime(end);
+          }}
           min={0}
           max={duration}
           step={0.001}
         />
-        <audio ref={audioRef} controls />
+        <audio ref={audioRef} />
       </div>
+
       <div className="clipper__controls">
         <ToggleButton
           status={isPlaying}
