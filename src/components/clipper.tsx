@@ -81,14 +81,10 @@ export default function Clipper({ file }: ClipperProps) {
     audio.currentTime = startTime;
   }, [startTime]);
 
-  const handleSelection = (range: [start: number, end: number] | null) => {
-    if (!range) {
-      setStartTime(0);
-      setEndTime(duration);
-    } else {
-      setStartTime(range[0] * duration);
-      setEndTime(range[1] * duration);
-    }
+  const handleSelection = (e, newValue) => {
+    const [start, end] = newValue as [number, number];
+    setStartTime(start);
+    setEndTime(end);
   };
 
   return (
@@ -102,11 +98,7 @@ export default function Clipper({ file }: ClipperProps) {
         />
         <Slider
           value={[startTime, endTime]}
-          onChange={(e, newValue) => {
-            const [start, end] = newValue as [number, number];
-            setStartTime(start);
-            setEndTime(end);
-          }}
+          onChange={handleSelection}
           min={0}
           max={duration}
           step={0.001}
