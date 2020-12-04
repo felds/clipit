@@ -1,6 +1,7 @@
 import Slider from "@material-ui/core/Slider";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { IoIosInfinite, IoIosPlay } from "react-icons/io";
+import { clipChannels, encodeMp3 } from "../util/audio";
 import Curve from "./curve";
 import ToggleButton from "./toggle-button";
 
@@ -68,11 +69,9 @@ export default function Clipper({ file }: ClipperProps) {
   useEffect(() => {
     const audio = audioRef.current!;
     audio.src = URL.createObjectURL(file);
-    const revokeUrl = () => {
+    audio.onload = () => {
       URL.revokeObjectURL(audio.src);
-      audio.removeEventListener("load", revokeUrl);
     };
-    audio.addEventListener("load", revokeUrl);
   }, [file]);
 
   // sync current time with start time
@@ -86,6 +85,27 @@ export default function Clipper({ file }: ClipperProps) {
     setStartTime(start);
     setEndTime(end);
   };
+
+  async function handleDownload() {
+    // fetch file contents
+    const arrayBuffer = await file.arrayBuffer();
+
+    // decode audio data
+    const audioContext = new AudioContext();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+    // encode mp3
+    const channels = clipChannels(audioBuffer, startTime, endTime);
+    const blob = await encodeMp3(channels, audioBuffer);
+
+    // display audio
+    const a = document.createElement("a");
+    a.setAttribute("download", "clip.mp3");
+    a.setAttribute("hidden", "hidden");
+    a.href = URL.createObjectURL(blob);
+    document.body.appendChild(a);
+    a.click();
+  }
 
   return (
     <div className="clipper">
@@ -119,6 +139,7 @@ export default function Clipper({ file }: ClipperProps) {
           offContent={<IoIosInfinite />}
           onChange={(loop) => setLoop(loop)}
         />
+        <button onClick={handleDownload}>Baixar</button>
       </div>
     </div>
   );
