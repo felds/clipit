@@ -190,3 +190,22 @@ audio {
 .clipper__controls {
   margin: 1rem 0 2rem;
 }
+
+/* Controls */
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.controls__start {
+  flex: 0 0;
+  white-space: nowrap;
+}
+.controls__middle {
+  flex: 1 1;
+  text-align: center;
+}
+.controls__end {
+  flex: 0 0;
+  white-space: nowrap;
+}

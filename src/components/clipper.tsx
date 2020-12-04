@@ -1,9 +1,25 @@
 import Slider from "@material-ui/core/Slider";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { IoIosInfinite, IoIosPlay } from "react-icons/io";
-import { clipChannels, encodeMp3 } from "../util/audio";
+import {
+  IoIosInfinite,
+  IoIosPlay,
+  IoMdDownload as IoIosDownload,
+} from "react-icons/io";
+import { clipChannels, encodeMp3, loadAudioData } from "../util/audio";
 import Curve from "./curve";
 import ToggleButton from "./toggle-button";
+
+enum Status {
+  NONE,
+  READING_FILE,
+  EXPORTING_MP3,
+}
+
+const statusTexts: { [k in Status]: string } = {
+  [Status.NONE]: "",
+  [Status.READING_FILE]: "Reading file",
+  [Status.EXPORTING_MP3]: "Exporting MP3",
+};
 
 type ClipperProps = {
   file: File;
@@ -15,6 +31,16 @@ export default function Clipper({ file }: ClipperProps) {
   const [endTime, setEndTime] = useState(0);
   const [currentTime, setCurrentTime] = useState(startTime);
   const [loop, setLoop] = useState(false);
+  const [status, setStatus] = useState<Status>(Status.NONE);
+  const [graphData, setGraphData] = useState<number[][]>([]);
+
+  useEffect(() => {
+    setStatus(Status.READING_FILE);
+    loadAudioData(file, 300).then((graphData) => {
+      setGraphData(graphData);
+      setStatus(Status.NONE);
+    });
+  }, [file]);
 
   const updateMetadata = () => {
     const audio = audioRef.current!;
@@ -111,7 +137,7 @@ export default function Clipper({ file }: ClipperProps) {
     <div className="clipper">
       <div className="clipper__view">
         <Curve
-          file={file}
+          graphData={graphData}
           currentTime={currentTime}
           duration={duration}
           trim={[startTime, endTime]}
@@ -127,19 +153,28 @@ export default function Clipper({ file }: ClipperProps) {
       </div>
 
       <div className="clipper__controls">
-        <ToggleButton
-          status={isPlaying}
-          onContent={<IoIosPlay />}
-          offContent={<IoIosPlay />}
-          onChange={playPause}
-        />{" "}
-        <ToggleButton
-          status={loop}
-          onContent={<IoIosInfinite />}
-          offContent={<IoIosInfinite />}
-          onChange={(loop) => setLoop(loop)}
-        />
-        <button onClick={handleDownload}>Baixar</button>
+        <div className="controls">
+          <div className="controls__start">
+            <ToggleButton
+              status={isPlaying}
+              onContent={<IoIosPlay />}
+              offContent={<IoIosPlay />}
+              onChange={playPause}
+            />{" "}
+            <ToggleButton
+              status={loop}
+              onContent={<IoIosInfinite />}
+              offContent={<IoIosInfinite />}
+              onChange={(loop) => setLoop(loop)}
+            />
+          </div>
+          <div className="controls__middle">{statusTexts[status]}</div>
+          <div className="controls__end">
+            <button onClick={handleDownload}>
+              <IoIosDownload />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

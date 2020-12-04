@@ -1,6 +1,5 @@
 import { area, curveBasis, extent, scaleLinear, select } from "d3";
-import React, { useEffect, useRef, useState } from "react";
-import { loadAudioData } from "../util/audio";
+import React, { useEffect, useRef } from "react";
 
 /**
  * @todo send the audio processing to a worker
@@ -25,37 +24,31 @@ const shape = area<number>()
   .curve(curveBasis);
 
 type CurveProps = {
-  file: File;
+  graphData: number[][];
   currentTime: number;
   duration: number;
   trim: [start: number, end: number];
 };
 export default function Curve({
-  file,
+  graphData,
   currentTime,
   duration,
   trim,
 }: CurveProps) {
-  const [data, setData] = useState<number[][]>([]);
   const pathsRef = useRef<SVGGElement>(null);
 
   // update the graph when de data changes
   useEffect(() => {
-    const dom = extent(data.flat(2)) as [number, number];
+    const dom = extent(graphData.flat(2)) as [number, number];
     yScale.domain(dom);
 
     select(pathsRef.current!)
       .selectAll("path")
-      .data(data)
+      .data(graphData)
       .join("path")
       .transition()
       .attr("d", shape);
-  }, [data]);
-
-  // update data when file changes
-  useEffect(() => {
-    loadAudioData(file, numberOfSamples).then(setData);
-  }, [file]);
+  }, [graphData]);
 
   // playhead
   const playheadRef = useRef<SVGLineElement>(null);
@@ -88,7 +81,6 @@ export default function Curve({
       .attr("x", (d) => durationScale(d))
       .attr("width", (d) => durationScale(duration - d));
   }, [trim, duration]);
-  // ---------------------------
 
   return (
     <svg
