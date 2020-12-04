@@ -28,12 +28,14 @@ type CurveProps = {
   currentTime: number;
   duration: number;
   trim: [start: number, end: number];
+  samples: number;
 };
 export default function Curve({
   graphData,
   currentTime,
   duration,
   trim,
+  samples,
 }: CurveProps) {
   const pathsRef = useRef<SVGGElement>(null);
 
@@ -41,6 +43,7 @@ export default function Curve({
   useEffect(() => {
     const dom = extent(graphData.flat(2)) as [number, number];
     yScale.domain(dom);
+    xScale.domain([0, samples]);
 
     select(pathsRef.current!)
       .selectAll("path")
@@ -48,7 +51,7 @@ export default function Curve({
       .join("path")
       .transition()
       .attr("d", shape);
-  }, [graphData]);
+  }, [graphData, samples]);
 
   // playhead
   const playheadRef = useRef<SVGLineElement>(null);

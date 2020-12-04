@@ -21,6 +21,8 @@ const statusTexts: { [k in Status]: string } = {
   [Status.EXPORTING_MP3]: "Exporting MP3",
 };
 
+const SAMPLES = 300;
+
 type ClipperProps = {
   file: File;
 };
@@ -36,7 +38,8 @@ export default function Clipper({ file }: ClipperProps) {
 
   useEffect(() => {
     setStatus(Status.READING_FILE);
-    loadAudioData(file, 300).then((graphData) => {
+    setGraphData([]);
+    loadAudioData(file, SAMPLES).then((graphData) => {
       setGraphData(graphData);
       setStatus(Status.NONE);
     });
@@ -106,7 +109,10 @@ export default function Clipper({ file }: ClipperProps) {
     audio.currentTime = startTime;
   }, [startTime]);
 
-  const handleSelection = (e, newValue) => {
+  const handleSelection = (
+    e: React.ChangeEvent<{}>,
+    newValue: number | number[],
+  ) => {
     const [start, end] = newValue as [number, number];
     setStartTime(start);
     setEndTime(end);
@@ -141,6 +147,7 @@ export default function Clipper({ file }: ClipperProps) {
           currentTime={currentTime}
           duration={duration}
           trim={[startTime, endTime]}
+          samples={SAMPLES}
         />
         <Slider
           value={[startTime, endTime]}
