@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/clipit/static/css/main.d137bc3c.chunk.css",
-    "main.js": "/clipit/static/js/main.6edbaf6b.chunk.js",
-    "main.js.map": "/clipit/static/js/main.6edbaf6b.chunk.js.map",
+    "main.css": "/clipit/static/css/main.e6fd06cf.chunk.css",
+    "main.js": "/clipit/static/js/main.16eb6d69.chunk.js",
+    "main.js.map": "/clipit/static/js/main.16eb6d69.chunk.js.map",
     "runtime-main.js": "/clipit/static/js/runtime-main.4822dac2.js",
     "runtime-main.js.map": "/clipit/static/js/runtime-main.4822dac2.js.map",
-    "static/js/2.291dcb67.chunk.js": "/clipit/static/js/2.291dcb67.chunk.js",
-    "static/js/2.291dcb67.chunk.js.map": "/clipit/static/js/2.291dcb67.chunk.js.map",
+    "static/js/2.407f2380.chunk.js": "/clipit/static/js/2.407f2380.chunk.js",
+    "static/js/2.407f2380.chunk.js.map": "/clipit/static/js/2.407f2380.chunk.js.map",
     "index.html": "/clipit/index.html",
-    "static/css/main.d137bc3c.chunk.css.map": "/clipit/static/css/main.d137bc3c.chunk.css.map",
-    "static/js/2.291dcb67.chunk.js.LICENSE.txt": "/clipit/static/js/2.291dcb67.chunk.js.LICENSE.txt"
+    "static/css/main.e6fd06cf.chunk.css.map": "/clipit/static/css/main.e6fd06cf.chunk.css.map",
+    "static/js/2.407f2380.chunk.js.LICENSE.txt": "/clipit/static/js/2.407f2380.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.4822dac2.js",
-    "static/js/2.291dcb67.chunk.js",
-    "static/css/main.d137bc3c.chunk.css",
-    "static/js/main.6edbaf6b.chunk.js"
+    "static/js/2.407f2380.chunk.js",
+    "static/css/main.e6fd06cf.chunk.css",
+    "static/js/main.16eb6d69.chunk.js"
   ]
 }
