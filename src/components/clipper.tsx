@@ -34,11 +34,10 @@ export default function Clipper({ file }: ClipperProps) {
   const [currentTime, setCurrentTime] = useState(startTime);
   const [loop, setLoop] = useState(false);
   const [status, setStatus] = useState<Status>(Status.NONE);
-  const [graphData, setGraphData] = useState<number[][]>([]);
+  const [graphData, setGraphData] = useState<number[][] | null>(null);
 
   useEffect(() => {
     setStatus(Status.READING_FILE);
-    setGraphData([]);
     loadAudioData(file, SAMPLES).then((graphData) => {
       setGraphData(graphData);
       setStatus(Status.NONE);

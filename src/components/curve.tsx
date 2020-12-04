@@ -24,30 +24,35 @@ const shape = area<number>()
   .curve(curveBasis);
 
 type CurveProps = {
-  graphData: number[][];
+  samples: number;
+  graphData: number[][] | null;
   currentTime: number;
   duration: number;
   trim: [start: number, end: number];
-  samples: number;
 };
 export default function Curve({
   graphData,
+  samples,
   currentTime,
   duration,
   trim,
-  samples,
 }: CurveProps) {
   const pathsRef = useRef<SVGGElement>(null);
 
   // update the graph when de data changes
   useEffect(() => {
-    const dom = extent(graphData.flat(2)) as [number, number];
-    yScale.domain(dom);
+    const paths = pathsRef.current!;
+    const data = graphData !== null ? graphData : [Array(samples).fill(0.5)];
+    const yDomain =
+      graphData !== null
+        ? (extent(graphData.flat(2)) as [number, number])
+        : [0, 1];
+    yScale.domain(yDomain);
     xScale.domain([0, samples]);
 
-    select(pathsRef.current!)
+    select(paths)
       .selectAll("path")
-      .data(graphData)
+      .data(data)
       .join("path")
       .transition()
       .attr("d", shape);
