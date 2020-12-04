@@ -16,6 +16,7 @@
     "customize-cra": "^1.0.0",
     "d3": "^6.2.0",
     "gh-pages": "^3.1.0",
+    "lamejs": "^1.2.0",
     "lodash": "^4.17.20",
     "react": "^16.14.0",
     "react-app-rewired": "^2.1.6",

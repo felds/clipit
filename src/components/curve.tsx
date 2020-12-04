@@ -1,6 +1,6 @@
 import { area, curveBasis, extent, scaleLinear, select } from "d3";
 import React, { useEffect, useRef, useState } from "react";
-import { loadAudioData } from "../util/sound";
+import { loadAudioData } from "../util/audio";
 
 /**
  * @todo send the audio processing to a worker
