@@ -30,32 +30,18 @@ type CurveProps = {
   duration: number;
   trim: [start: number, end: number];
 };
-export default function Curve({
-  graphData,
-  samples,
-  currentTime,
-  duration,
-  trim,
-}: CurveProps) {
+export default function Curve({ graphData, samples, currentTime, duration, trim }: CurveProps) {
   const pathsRef = useRef<SVGGElement>(null);
 
   // update the graph when de data changes
   useEffect(() => {
     const paths = pathsRef.current!;
     const data = graphData !== null ? graphData : [Array(samples).fill(0.5)];
-    const yDomain =
-      graphData !== null
-        ? (extent(graphData.flat(2)) as [number, number])
-        : [0, 1];
+    const yDomain = graphData !== null ? (extent(graphData.flat(2)) as [number, number]) : [0, 1];
     yScale.domain(yDomain);
     xScale.domain([0, samples]);
 
-    select(paths)
-      .selectAll("path")
-      .data(data)
-      .join("path")
-      .transition()
-      .attr("d", shape);
+    select(paths).selectAll("path").data(data).join("path").transition().attr("d", shape);
   }, [graphData, samples]);
 
   // playhead
@@ -64,12 +50,7 @@ export default function Curve({
     .domain([0, duration])
     .range([1, innerWidth - 1]);
   useEffect(() => {
-    select(playheadRef.current!)
-      .datum(currentTime)
-      .attr("x1", playheadScale)
-      .attr("x2", playheadScale)
-      .attr("y1", 0)
-      .attr("y2", innerHeight);
+    select(playheadRef.current!).datum(currentTime).attr("x1", playheadScale).attr("x2", playheadScale).attr("y1", 0).attr("y2", innerHeight);
   }, [currentTime, duration, playheadScale]);
 
   // mask
@@ -90,13 +71,12 @@ export default function Curve({
       .attr("width", (d) => durationScale(duration - d));
   }, [trim, duration]);
 
+  useEffect(() => {
+    console.log(JSON.stringify(graphData));
+  }, [graphData]);
+
   return (
-    <svg
-      width={width}
-      height={height}
-      viewBox={`0 0 ${width} ${height}`}
-      className="curve"
-    >
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="curve">
       <defs>
         <g id="filterMask">
           <rect x="0" y="0" width="0" height="500" ref={startMaskRef} />
@@ -105,44 +85,10 @@ export default function Curve({
 
         <filter id="filter" colorInterpolationFilters="linearRGB">
           <feImage id="feimage" href="#filterMask" x="0" y="0" result="mask" />
-          <feFlood
-            floodColor="#ffffff"
-            floodOpacity="1"
-            x="0%"
-            y="0%"
-            width="100%"
-            height="100%"
-            result="flood"
-          />
-          <feBlend
-            mode="color"
-            x="0%"
-            y="0%"
-            width="100%"
-            height="100%"
-            in="flood"
-            in2="SourceGraphic"
-            result="blend"
-          />
-          <feFlood
-            floodColor="#ffffff"
-            floodOpacity="0.666"
-            x="0%"
-            y="0%"
-            width="100%"
-            height="100%"
-            result="flood1"
-          />
-          <feBlend
-            mode="screen"
-            x="0%"
-            y="0%"
-            width="100%"
-            height="100%"
-            in="blend"
-            in2="flood1"
-            result="blend1"
-          />
+          <feFlood floodColor="#ffffff" floodOpacity="1" x="0%" y="0%" width="100%" height="100%" result="flood" />
+          <feBlend mode="color" x="0%" y="0%" width="100%" height="100%" in="flood" in2="SourceGraphic" result="blend" />
+          <feFlood floodColor="#ffffff" floodOpacity="0.666" x="0%" y="0%" width="100%" height="100%" result="flood1" />
+          <feBlend mode="screen" x="0%" y="0%" width="100%" height="100%" in="blend" in2="flood1" result="blend1" />
           <feComposite in2="mask" in="blend1" operator="in" result="comp" />
           <feMerge result="merge">
             <feMergeNode in="SourceGraphic" />
@@ -153,13 +99,7 @@ export default function Curve({
 
       <g transform={`translate(${margin.left}, ${margin.top})`}>
         <g ref={pathsRef} className="curve__paths" filter="url(#filter)">
-          <rect
-            x="0"
-            y="0"
-            width={innerWidth}
-            height={innerHeight}
-            fill="whitesmoke"
-          />
+          <rect x="0" y="0" width={innerWidth} height={innerHeight} fill="whitesmoke" />
         </g>
         <line ref={playheadRef} className="curve__playhead" />
       </g>
