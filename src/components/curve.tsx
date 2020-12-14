@@ -50,7 +50,12 @@ export default function Curve({ graphData, samples, currentTime, duration, trim 
     .domain([0, duration])
     .range([1, innerWidth - 1]);
   useEffect(() => {
-    select(playheadRef.current!).datum(currentTime).attr("x1", playheadScale).attr("x2", playheadScale).attr("y1", 0).attr("y2", innerHeight);
+    select(playheadRef.current!)
+      .datum(currentTime)
+      .attr("x1", playheadScale)
+      .attr("x2", playheadScale)
+      .attr("y1", 0)
+      .attr("y2", innerHeight);
   }, [currentTime, duration, playheadScale]);
 
   // mask
@@ -86,7 +91,16 @@ export default function Curve({ graphData, samples, currentTime, duration, trim 
         <filter id="filter" colorInterpolationFilters="linearRGB">
           <feImage id="feimage" href="#filterMask" x="0" y="0" result="mask" />
           <feFlood floodColor="#ffffff" floodOpacity="1" x="0%" y="0%" width="100%" height="100%" result="flood" />
-          <feBlend mode="color" x="0%" y="0%" width="100%" height="100%" in="flood" in2="SourceGraphic" result="blend" />
+          <feBlend
+            mode="color"
+            x="0%"
+            y="0%"
+            width="100%"
+            height="100%"
+            in="flood"
+            in2="SourceGraphic"
+            result="blend"
+          />
           <feFlood floodColor="#ffffff" floodOpacity="0.666" x="0%" y="0%" width="100%" height="100%" result="flood1" />
           <feBlend mode="screen" x="0%" y="0%" width="100%" height="100%" in="blend" in2="flood1" result="blend1" />
           <feComposite in2="mask" in="blend1" operator="in" result="comp" />
@@ -101,6 +115,26 @@ export default function Curve({ graphData, samples, currentTime, duration, trim 
         <g ref={pathsRef} className="curve__paths" filter="url(#filter)">
           <rect x="0" y="0" width={innerWidth} height={innerHeight} fill="whitesmoke" />
         </g>
+        <rect
+          x="300"
+          y="0"
+          height="100%"
+          width="500"
+          style={{
+            mixBlendMode: "saturation",
+            fill: "#ffffff",
+          }}
+        />
+        <rect
+          x="300"
+          y="0"
+          height="100%"
+          width="500"
+          style={{
+            fill: "#ffffff",
+            opacity: 0.9,
+          }}
+        />
         <line ref={playheadRef} className="curve__playhead" />
       </g>
     </svg>
