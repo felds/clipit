@@ -83,57 +83,39 @@ export default function Curve({ graphData, samples, currentTime, duration, trim 
   return (
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="curve">
       <defs>
-        <g id="filterMask">
-          <rect x="0" y="0" width="0" height="500" ref={startMaskRef} />
-          <rect x="1200" y="0" width="500" height="500" ref={endMaskRef} />
-        </g>
-
-        <filter id="filter" colorInterpolationFilters="linearRGB">
-          <feImage id="feimage" href="#filterMask" x="0" y="0" result="mask" />
-          <feFlood floodColor="#ffffff" floodOpacity="1" x="0%" y="0%" width="100%" height="100%" result="flood" />
-          <feBlend
-            mode="color"
-            x="0%"
-            y="0%"
-            width="100%"
-            height="100%"
-            in="flood"
-            in2="SourceGraphic"
-            result="blend"
-          />
-          <feFlood floodColor="#ffffff" floodOpacity="0.666" x="0%" y="0%" width="100%" height="100%" result="flood1" />
-          <feBlend mode="screen" x="0%" y="0%" width="100%" height="100%" in="blend" in2="flood1" result="blend1" />
-          <feComposite in2="mask" in="blend1" operator="in" result="comp" />
-          <feMerge result="merge">
-            <feMergeNode in="SourceGraphic" />
-            <feMergeNode in="comp" />
-          </feMerge>
-        </filter>
+        <mask id="selectionMask">
+          <rect width="300" height="100%" fill="white" ref={startMaskRef} />
+          <rect x="100%" y="0" height="100%" fill="white" ref={endMaskRef} />
+        </mask>
       </defs>
 
       <g transform={`translate(${margin.left}, ${margin.top})`}>
-        <g ref={pathsRef} className="curve__paths" filter="url(#filter)">
-          <rect x="0" y="0" width={innerWidth} height={innerHeight} fill="whitesmoke" />
+        <g ref={pathsRef} className="curve__paths">
+          <rect x="0" y="0" width={innerWidth} height={innerHeight} fill="#eadbf6" />
         </g>
         <rect
-          x="300"
-          y="0"
+          x="0%"
+          y="0%"
           height="100%"
-          width="500"
+          width="100%"
           style={{
             mixBlendMode: "saturation",
             fill: "#ffffff",
+            stroke: "none",
           }}
+          mask="url(#selectionMask)"
         />
         <rect
-          x="300"
+          x="0"
           y="0"
           height="100%"
-          width="500"
+          width="100%"
           style={{
             fill: "#ffffff",
-            opacity: 0.9,
+            opacity: 0.5,
+            stroke: "none",
           }}
+          mask="url(#selectionMask)"
         />
         <line ref={playheadRef} className="curve__playhead" />
       </g>
