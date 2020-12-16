@@ -1,6 +1,5 @@
 import { Mp3Encoder } from "lamejs";
-import * as _ from "lodash/fp";
-import { chunk, map, mean, pipe } from "lodash/fp";
+import { map, mean, pipe } from "lodash/fp";
 
 export type Channels = [left: Int16Array, right?: Int16Array];
 
@@ -9,11 +8,6 @@ export const rms = pipe(
   pipe(mean, Math.sqrt),
 );
 
-export const processChannel = (samples: number) => (
-  channelData: number[],
-): number[] =>
-  pipe(chunk(Math.ceil(channelData.length / samples)), map(rms))(channelData);
-
 export const loadFileAsArrayBuffer = (file: File): Promise<ArrayBuffer> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -21,21 +15,6 @@ export const loadFileAsArrayBuffer = (file: File): Promise<ArrayBuffer> =>
     reader.onload = (e) => resolve(reader.result as ArrayBuffer);
     reader.onerror = (e) => reject(new Error("Couldn't read file."));
   });
-
-// export const getBaseline = (channels: number[][]) => unzip(channels)
-const getBaseline = _.pipe(_.unzip, _.map(_.min), _.map(_.toNumber));
-
-export const loadAudioData = async (
-  file: File,
-  samples: number,
-): Promise<number[][]> => {
-  const audioData = await getChannels(file);
-  const processedChannels = audioData.map(processChannel(samples));
-
-  return processedChannels.length === 1
-    ? processedChannels
-    : [...processedChannels, getBaseline(processedChannels)];
-};
 
 export function float32ArraytoInt16Array(
   floatbuffer: Float32Array,
@@ -118,6 +97,9 @@ export const getChannels = async (file: File): Promise<number[][]> => {
   return channels;
 };
 
+/**
+ * Get the decoded audio buffer from a file's array buffer.
+ */
 export async function decodeAudio(
   arrayBuffer: ArrayBuffer,
 ): Promise<AudioBuffer> {
@@ -130,6 +112,10 @@ export async function decodeAudio(
   });
 }
 
+/**
+ * Extract the first and second channels from the audio data.
+ * If the sound is mono, return the first channel twice.
+ */
 export async function getRawChannels(file: File): Promise<RawChannels> {
   const buffer = await loadFileAsArrayBuffer(file);
   const audioData = await decodeAudio(buffer);
@@ -139,4 +125,20 @@ export async function getRawChannels(file: File): Promise<RawChannels> {
       ? audioData.getChannelData(1)
       : audioData.getChannelData(0),
   ];
+}
+
+/**
+ * Parse the raw channel data into graphable data.
+ */
+export function processChannel(channel: Float32Array, samples: number) {
+  const len = channel.length;
+  const chunkSize = Math.ceil(len / samples);
+  const chunks = new Array(samples);
+
+  for (let i = 0; i < samples; i++) {
+    const xs = channel.subarray(chunkSize * i, chunkSize * (i + 1));
+    chunks[i] = rms(xs);
+  }
+
+  return chunks;
 }

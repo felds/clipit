@@ -143,7 +143,6 @@ export default function Clipper({ file }: ClipperProps) {
     <div className="clipper">
       <div className="clipper__view">
         <Graph
-          graphData={graphData}
           currentTime={currentTime}
           duration={duration}
           trim={[startTime, endTime]}
