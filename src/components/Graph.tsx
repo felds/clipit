@@ -1,11 +1,4 @@
-import {
-  area,
-  curveBasis,
-  easeCubicOut,
-  extent,
-  scaleLinear,
-  select,
-} from "d3";
+import { area, curveBasis, easeBackOut, extent, scaleLinear, select } from "d3";
 import { map, min, pipe, toNumber, unzip } from "lodash/fp";
 import { useEffect, useRef, useState } from "react";
 import { processChannel } from "../util/audio";
@@ -13,7 +6,7 @@ import "./Graph.css";
 
 const width = 1200;
 const height = 120;
-const margin = { top: 0, right: 0, bottom: 0, left: 0 };
+const margin = { top: 10, right: 0, bottom: 0, left: 0 };
 const innerWidth = width - margin.left - margin.right;
 const innerHeight = height - margin.top - margin.bottom;
 
@@ -60,7 +53,7 @@ export default function Graph({
         data === null
           ? graphData.length - n // reverse
           : n;
-      return pos * 200;
+      return pos * 300;
     };
 
     const selection = select(pathsRef.current).selectAll("path");
@@ -68,9 +61,9 @@ export default function Graph({
       .data(graphData)
       .join("path")
       .transition()
-      .duration(700)
+      .duration(500)
       .delay((d, i) => delay(i))
-      .ease(easeCubicOut)
+      .ease(easeBackOut)
       .attr("d", shape);
   }, [data, samples]);
 
