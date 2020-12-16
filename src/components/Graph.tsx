@@ -58,26 +58,31 @@ const shape = area<number>()
   .y1((d) => yScale(d))
   .curve(curveBasis);
 
-type CurveProps = {
+// type GraphDada = [left: number[], right: number[]] ;
+type GraphData = number[][];
+type GraphProps = {
+  rawChannels: RawChannels | null;
   samples: number;
-  graphData: number[][] | null;
+  graphData: GraphData | null;
   currentTime: number;
   duration: number;
   trim: [start: number, end: number];
 };
 export default function Curve({
+  rawChannels,
   graphData,
   samples,
   currentTime,
   duration,
   trim,
-}: CurveProps) {
+}: GraphProps) {
   const pathsRef = useRef<SVGGElement>(null);
 
   // update the graph when de data changes
   useEffect(() => {
     const paths = pathsRef.current!;
-    const data = graphData !== null ? graphData : [Array(samples).fill(0.5)];
+    const data = graphData !== null ? graphData : [Array(samples).fill(0)];
+    console.log(graphData?.length);
     const yDomain =
       graphData !== null
         ? (extent(graphData.flat(2)) as [number, number])
@@ -124,10 +129,6 @@ export default function Curve({
       .attr("x", (d) => durationScale(d))
       .attr("width", (d) => durationScale(duration - d));
   }, [trim, duration]);
-
-  useEffect(() => {
-    console.log(JSON.stringify(graphData));
-  }, [graphData]);
 
   return (
     <svg

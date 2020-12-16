@@ -5,7 +5,7 @@ import {
   IoIosPlay,
   IoMdDownload as IoIosDownload,
 } from "react-icons/io";
-import { clipChannels, encodeMp3, loadAudioData } from "../util/audio";
+import { clipChannels, encodeMp3, getRawChannels } from "../util/audio";
 import Graph from "./Graph";
 import ToggleButton from "./toggle-button";
 
@@ -35,11 +35,14 @@ export default function Clipper({ file }: ClipperProps) {
   const [loop, setLoop] = useState(false);
   const [status, setStatus] = useState<Status>(Status.NONE);
   const [graphData, setGraphData] = useState<number[][] | null>(null);
+  const [rawChannels, setRawChannels] = useState<RawChannels | null>(null);
 
+  // decode de audio data
   useEffect(() => {
+    setRawChannels(null);
     setStatus(Status.READING_FILE);
-    loadAudioData(file, SAMPLES).then((graphData) => {
-      setGraphData(graphData);
+    getRawChannels(file).then((rawChannels) => {
+      setRawChannels(rawChannels);
       setStatus(Status.NONE);
     });
   }, [file]);
