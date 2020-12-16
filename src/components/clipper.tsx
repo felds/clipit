@@ -6,7 +6,7 @@ import {
   IoMdDownload as IoIosDownload,
 } from "react-icons/io";
 import { clipChannels, encodeMp3, loadAudioData } from "../util/audio";
-import Curve from "./curve";
+import Graph from "./Graph";
 import ToggleButton from "./toggle-button";
 
 enum Status {
@@ -141,7 +141,7 @@ export default function Clipper({ file }: ClipperProps) {
   return (
     <div className="clipper">
       <div className="clipper__view">
-        <Curve
+        <Graph
           graphData={graphData}
           currentTime={currentTime}
           duration={duration}
