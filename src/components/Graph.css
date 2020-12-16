@@ -8,14 +8,15 @@
 
 .graph__paths path:nth-last-child(1) {
   fill: var(--color-1);
+  opacity: 1;
 }
 .graph__paths path:nth-last-child(2) {
   fill: var(--color-2);
-  opacity: 0.5;
+  opacity: 0.66;
 }
 .graph__paths path:nth-last-child(3) {
   fill: var(--color-3);
-  opacity: 0.5;
+  opacity: 0.66;
 }
 
 .graph__grayscale-overlay {
@@ -23,6 +24,6 @@
   fill: #ffffff;
 }
 .graph__opacity-overlay {
-  fill: #ffffff;
-  opacity: 0.5;
+  fill: #000;
+  opacity: 0.1;
 }

@@ -6,6 +6,7 @@ import {
   IoMdDownload as IoIosDownload,
 } from "react-icons/io";
 import { clipChannels, encodeMp3, getRawChannels } from "../util/audio";
+import { wait } from "../util/time";
 import Graph from "./Graph";
 import ToggleButton from "./toggle-button";
 
@@ -32,14 +33,16 @@ export default function Clipper({ file }: ClipperProps) {
   const [currentTime, setCurrentTime] = useState(startTime);
   const [loop, setLoop] = useState(false);
   const [status, setStatus] = useState<Status>(Status.NONE);
-  const [graphData, setGraphData] = useState<number[][] | null>(null);
   const [rawChannels, setRawChannels] = useState<RawChannels | null>(null);
 
   // decode de audio data
   useEffect(() => {
     setRawChannels(null);
     setStatus(Status.READING_FILE);
-    getRawChannels(file).then((rawChannels) => {
+    Promise.all([
+      getRawChannels(file),
+      wait(2000), // add a min time for the operation
+    ]).then(([rawChannels]) => {
       setRawChannels(rawChannels);
       setStatus(Status.NONE);
     });

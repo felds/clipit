@@ -1,13 +1,13 @@
 import {
   area,
   curveBasis,
-  easeBounceOut,
+  easeCubicOut,
   extent,
   scaleLinear,
   select,
 } from "d3";
 import { map, min, pipe, toNumber, unzip } from "lodash/fp";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { processChannel } from "../util/audio";
 import "./Graph.css";
 
@@ -32,20 +32,11 @@ export default function Graph({
   duration,
   trim,
 }: GraphProps) {
-  const samples = 300;
+  const samples = 200;
 
-  // process the raw data
-  const emptyData = useCallback((): GraphData => {
-    return [
-      Array(samples).fill(0),
-      Array(samples).fill(0),
-      Array(samples).fill(0),
-    ];
-  }, [samples]);
-
-  const [data, setData] = useState<GraphData>(emptyData());
+  const [data, setData] = useState<GraphData | null>(null);
   useEffect(() => {
-    setData(emptyData());
+    setData(null);
     if (rawChannels) {
       createGraphData(rawChannels, samples).then(setData);
     }
@@ -54,26 +45,34 @@ export default function Graph({
   // update the graph when de data changes
   const pathsRef = useRef<SVGGElement>(null);
   useEffect(() => {
-    const xScale = scaleLinear([0, samples], [0, innerWidth]);
-    const yDomain = extent(data.flat()) as [number, number];
+    const graphData = data ?? createEmptyData(samples);
+    const xScale = scaleLinear([0, samples - 1], [0, innerWidth]);
+    const yDomain =
+      data === null ? [0, 1] : (extent(graphData.flat()) as [number, number]);
     const yScale = scaleLinear(yDomain, [innerHeight, 0]);
     const shape = area<number>()
       .curve(curveBasis)
       .x((d, i) => xScale(i))
       .y0(innerHeight)
       .y1(yScale);
-    const delay = (n: number) => n * 333;
+    const delay = (n: number) => {
+      const pos =
+        data === null
+          ? graphData.length - n // reverse
+          : n;
+      return pos * 200;
+    };
 
     const selection = select(pathsRef.current).selectAll("path");
     selection
-      .data(data)
+      .data(graphData)
       .join("path")
       .transition()
-      .duration(1000)
+      .duration(700)
       .delay((d, i) => delay(i))
-      .ease(easeBounceOut)
+      .ease(easeCubicOut)
       .attr("d", shape);
-  }, [data]);
+  }, [data, samples]);
 
   // playhead
   const playheadRef = useRef<SVGLineElement>(null);
@@ -122,22 +121,22 @@ export default function Graph({
       <g transform={`translate(${margin.left}, ${margin.top})`}>
         <g ref={pathsRef} className="graph__paths" />
 
-        <g mask="url(#overlayMask)">
-          <rect
-            x="0"
-            y="0"
-            height={innerHeight}
-            width={innerWidth}
-            className="graph__grayscale-overlay"
-          />
-          <rect
-            x="0"
-            y="0"
-            height={innerHeight}
-            width={innerWidth}
-            className="graph__opacity-overlay"
-          />
-        </g>
+        <rect
+          x="0"
+          y="0"
+          height={innerHeight}
+          width={innerWidth}
+          className="graph__grayscale-overlay"
+          mask="url(#overlayMask)"
+        />
+        <rect
+          x="0"
+          y="0"
+          height={innerHeight}
+          width={innerWidth}
+          className="graph__opacity-overlay"
+          mask="url(#overlayMask)"
+        />
 
         <line ref={playheadRef} className="graph__playhead" />
       </g>
@@ -161,4 +160,12 @@ async function createGraphData(
     channels[0] === channels[1] ? left : getBaseline([left, right]);
 
   return [left, right, center];
+}
+
+function createEmptyData(samples: number): GraphData {
+  return [
+    Array(samples).fill(0),
+    Array(samples).fill(0),
+    Array(samples).fill(0),
+  ];
 }
