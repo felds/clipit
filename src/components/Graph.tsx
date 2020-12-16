@@ -1,68 +1,17 @@
-import { area, curveBasis, extent, scaleLinear, select } from "d3";
+import { area, curveBasis, easeBounceOut, scaleLinear, select } from "d3";
 import { useEffect, useRef } from "react";
-import styled from "styled-components";
-
-// .curve {
-//   /* background: var(--color-4); */
-// }
-// .curve__paths path:nth-last-child(1) {
-//   fill: var(--color-1);
-// }
-// .curve__paths path:nth-last-child(2) {
-//   fill: var(--color-2);
-//   opacity: 0.5;
-//   /* fill: none; */
-// }
-// .curve__paths path:nth-last-child(3) {
-//   fill: var(--color-3);
-//   opacity: 0.5;
-//   /* fill: none; */
-// }
-// .curve__playhead {
-//   stroke-width: 2;
-//   stroke: var(--color-text);
-// }
-
-const RectBGOverlay = styled.rect`
-  mix-blend-mode: saturation;
-  fill: #ffffff;
-`;
-const RectBrightnessOverlay = styled.rect`
-  fill: #ffffff;
-  opacity: 0.5;
-`;
-const LinePlayhead = styled.line`
-  stroke-width: 2;
-  stroke: currentColor;
-`;
-
-/**
- * @todo send the audio processing to a worker
- */
+import "./Graph.css";
 
 const width = 1200;
 const height = 120;
 const margin = { top: 0, right: 0, bottom: 0, left: 0 };
 const innerWidth = width - margin.left - margin.right;
 const innerHeight = height - margin.top - margin.bottom;
-const numberOfSamples = width / 5;
-
-// d3 configs
-const xScale = scaleLinear()
-  .domain([0, numberOfSamples - 1])
-  .range([0, innerWidth]);
-const yScale = scaleLinear().domain([0, 10]).range([innerHeight, 0]);
-const shape = area<number>()
-  .x((_, i) => xScale(i))
-  .y0(innerHeight)
-  .y1((d) => yScale(d))
-  .curve(curveBasis);
 
 // type GraphDada = [left: number[], right: number[]] ;
 type GraphData = number[][];
 type GraphProps = {
   rawChannels: RawChannels | null;
-  samples: number;
   graphData: GraphData | null;
   currentTime: number;
   duration: number;
@@ -71,32 +20,59 @@ type GraphProps = {
 export default function Curve({
   rawChannels,
   graphData,
-  samples,
   currentTime,
   duration,
   trim,
 }: GraphProps) {
-  const pathsRef = useRef<SVGGElement>(null);
+  const samples = 300;
+
+  const xScale = scaleLinear([0, samples], [0, innerWidth]);
+  const yScale = scaleLinear([0, 10], [innerHeight, 0]);
+  const shape = area<number>()
+    .curve(curveBasis)
+    .x((d, i) => xScale(i))
+    .y0(innerHeight)
+    .y1(yScale);
+  const delay = (n: number) => n * 333;
 
   // update the graph when de data changes
+  const pathsRef = useRef<SVGGElement>(null);
   useEffect(() => {
-    const paths = pathsRef.current!;
-    const data = graphData !== null ? graphData : [Array(samples).fill(0)];
-    console.log(graphData?.length);
-    const yDomain =
-      graphData !== null
-        ? (extent(graphData.flat(2)) as [number, number])
-        : [0, 1];
-    yScale.domain(yDomain);
-    xScale.domain([0, samples]);
-
-    select(paths)
-      .selectAll("path")
-      .data(data)
+    console.log("ZERA TUDO");
+    const selection = select(pathsRef.current).selectAll("path");
+    selection
+      .data([
+        new Array(samples).fill(0),
+        new Array(samples).fill(0),
+        new Array(samples).fill(0),
+      ])
       .join("path")
       .transition()
+      .duration(1000)
+      .delay((d, i) => delay(i))
+      .ease(easeBounceOut)
       .attr("d", shape);
-  }, [graphData, samples]);
+  }, []);
+
+  useEffect(() => {
+    console.log("vai dispara");
+    setTimeout(() => {
+      console.log("DISPARO");
+      const selection = select(pathsRef.current).selectAll("path");
+      selection
+        .data([
+          new Array(samples).fill(5),
+          new Array(samples).fill(5),
+          new Array(samples).fill(5),
+        ])
+        .join("path")
+        .transition()
+        .duration(1000)
+        .delay((d, i) => delay(i))
+        .ease(easeBounceOut)
+        .attr("d", shape);
+    }, 2000);
+  }, []);
 
   // playhead
   const playheadRef = useRef<SVGLineElement>(null);
@@ -135,44 +111,36 @@ export default function Curve({
       width={width}
       height={height}
       viewBox={`0 0 ${width} ${height}`}
-      className="curve"
+      className="graph"
     >
       <defs>
-        <mask id="selectionMask">
+        <mask id="overlayMask">
           <rect width="300" height="100%" fill="white" ref={startMaskRef} />
           <rect x="100%" y="0" height="100%" fill="white" ref={endMaskRef} />
         </mask>
       </defs>
 
       <g transform={`translate(${margin.left}, ${margin.top})`}>
-        <g ref={pathsRef} className="curve__paths">
+        <g ref={pathsRef} className="graph__paths" />
+
+        <g mask="url(#overlayMask)">
           <rect
             x="0"
             y="0"
-            width={innerWidth}
             height={innerHeight}
-            fill="#eadbf6"
+            width={innerWidth}
+            className="graph__grayscale-overlay"
           />
-        </g>
-
-        <g id="overlay">
-          <RectBGOverlay
+          <rect
             x="0"
             y="0"
             height={innerHeight}
             width={innerWidth}
-            mask="url(#selectionMask)"
-          />
-          <RectBrightnessOverlay
-            x="0"
-            y="0"
-            height={innerHeight}
-            width={innerWidth}
-            mask="url(#selectionMask)"
+            className="graph__opacity-overlay"
           />
         </g>
 
-        <LinePlayhead ref={playheadRef} />
+        <line ref={playheadRef} className="graph__playhead" />
       </g>
     </svg>
   );

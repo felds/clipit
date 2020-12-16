@@ -21,8 +21,6 @@ const statusTexts: { [k in Status]: string } = {
   [Status.EXPORTING_MP3]: "Exporting MP3",
 };
 
-const SAMPLES = 300;
-
 type ClipperProps = {
   file: File;
 };
@@ -149,7 +147,7 @@ export default function Clipper({ file }: ClipperProps) {
           currentTime={currentTime}
           duration={duration}
           trim={[startTime, endTime]}
-          samples={SAMPLES}
+          rawChannels={rawChannels}
         />
         <Slider
           value={[startTime, endTime]}

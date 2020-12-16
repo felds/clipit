@@ -166,23 +166,6 @@ audio {
   margin: 4rem 0;
 }
 
-.curve {
-  /* background: var(--color-4); */
-}
-.curve__paths path:nth-last-child(1) {
-  fill: var(--color-1);
-}
-.curve__paths path:nth-last-child(2) {
-  fill: var(--color-2);
-  opacity: 0.5;
-  /* fill: none; */
-}
-.curve__paths path:nth-last-child(3) {
-  fill: var(--color-3);
-  opacity: 0.5;
-  /* fill: none; */
-}
-
 .clipper__controls {
   margin: 1rem 0 2rem;
 }

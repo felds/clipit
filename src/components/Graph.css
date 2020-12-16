@@ -1,0 +1,28 @@
+.graph {
+  background: ghostwhite;
+}
+.graph__playhead {
+  stroke-width: 2;
+  stroke: currentColor;
+}
+
+.graph__paths path:nth-last-child(1) {
+  fill: var(--color-1);
+}
+.graph__paths path:nth-last-child(2) {
+  fill: var(--color-2);
+  opacity: 0.5;
+}
+.graph__paths path:nth-last-child(3) {
+  fill: var(--color-3);
+  opacity: 0.5;
+}
+
+.graph__grayscale-overlay {
+  mix-blend-mode: saturation;
+  fill: #ffffff;
+}
+.graph__opacity-overlay {
+  fill: #ffffff;
+  opacity: 0.5;
+}
