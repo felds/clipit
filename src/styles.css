@@ -182,10 +182,6 @@ audio {
   opacity: 0.5;
   /* fill: none; */
 }
-.curve__playhead {
-  stroke-width: 2;
-  stroke: var(--color-text);
-}
 
 .clipper__controls {
   margin: 1rem 0 2rem;

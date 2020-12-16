@@ -1,5 +1,40 @@
 import { area, curveBasis, extent, scaleLinear, select } from "d3";
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
+import styled from "styled-components";
+
+// .curve {
+//   /* background: var(--color-4); */
+// }
+// .curve__paths path:nth-last-child(1) {
+//   fill: var(--color-1);
+// }
+// .curve__paths path:nth-last-child(2) {
+//   fill: var(--color-2);
+//   opacity: 0.5;
+//   /* fill: none; */
+// }
+// .curve__paths path:nth-last-child(3) {
+//   fill: var(--color-3);
+//   opacity: 0.5;
+//   /* fill: none; */
+// }
+// .curve__playhead {
+//   stroke-width: 2;
+//   stroke: var(--color-text);
+// }
+
+const RectBGOverlay = styled.rect`
+  mix-blend-mode: saturation;
+  fill: #ffffff;
+`;
+const RectBrightnessOverlay = styled.rect`
+  fill: #ffffff;
+  opacity: 0.5;
+`;
+const LinePlayhead = styled.line`
+  stroke-width: 2;
+  stroke: currentColor;
+`;
 
 /**
  * @todo send the audio processing to a worker
@@ -30,18 +65,32 @@ type CurveProps = {
   duration: number;
   trim: [start: number, end: number];
 };
-export default function Curve({ graphData, samples, currentTime, duration, trim }: CurveProps) {
+export default function Curve({
+  graphData,
+  samples,
+  currentTime,
+  duration,
+  trim,
+}: CurveProps) {
   const pathsRef = useRef<SVGGElement>(null);
 
   // update the graph when de data changes
   useEffect(() => {
     const paths = pathsRef.current!;
     const data = graphData !== null ? graphData : [Array(samples).fill(0.5)];
-    const yDomain = graphData !== null ? (extent(graphData.flat(2)) as [number, number]) : [0, 1];
+    const yDomain =
+      graphData !== null
+        ? (extent(graphData.flat(2)) as [number, number])
+        : [0, 1];
     yScale.domain(yDomain);
     xScale.domain([0, samples]);
 
-    select(paths).selectAll("path").data(data).join("path").transition().attr("d", shape);
+    select(paths)
+      .selectAll("path")
+      .data(data)
+      .join("path")
+      .transition()
+      .attr("d", shape);
   }, [graphData, samples]);
 
   // playhead
@@ -81,7 +130,12 @@ export default function Curve({ graphData, samples, currentTime, duration, trim 
   }, [graphData]);
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="curve">
+    <svg
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      className="curve"
+    >
       <defs>
         <mask id="selectionMask">
           <rect width="300" height="100%" fill="white" ref={startMaskRef} />
@@ -91,33 +145,33 @@ export default function Curve({ graphData, samples, currentTime, duration, trim 
 
       <g transform={`translate(${margin.left}, ${margin.top})`}>
         <g ref={pathsRef} className="curve__paths">
-          <rect x="0" y="0" width={innerWidth} height={innerHeight} fill="#eadbf6" />
+          <rect
+            x="0"
+            y="0"
+            width={innerWidth}
+            height={innerHeight}
+            fill="#eadbf6"
+          />
         </g>
-        <rect
-          x="0%"
-          y="0%"
-          height="100%"
-          width="100%"
-          style={{
-            mixBlendMode: "saturation",
-            fill: "#ffffff",
-            stroke: "none",
-          }}
-          mask="url(#selectionMask)"
-        />
-        <rect
-          x="0"
-          y="0"
-          height="100%"
-          width="100%"
-          style={{
-            fill: "#ffffff",
-            opacity: 0.5,
-            stroke: "none",
-          }}
-          mask="url(#selectionMask)"
-        />
-        <line ref={playheadRef} className="curve__playhead" />
+
+        <g id="overlay">
+          <RectBGOverlay
+            x="0"
+            y="0"
+            height={innerHeight}
+            width={innerWidth}
+            mask="url(#selectionMask)"
+          />
+          <RectBrightnessOverlay
+            x="0"
+            y="0"
+            height={innerHeight}
+            width={innerWidth}
+            mask="url(#selectionMask)"
+          />
+        </g>
+
+        <LinePlayhead ref={playheadRef} />
       </g>
     </svg>
   );
