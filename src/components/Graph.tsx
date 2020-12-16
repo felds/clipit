@@ -76,7 +76,7 @@ export default function Graph({
       .attr("x1", playheadScale)
       .attr("x2", playheadScale)
       .attr("y1", 0)
-      .attr("y2", innerHeight);
+      .attr("y2", height);
   }, [currentTime, duration, playheadScale]);
 
   // mask
@@ -111,22 +111,26 @@ export default function Graph({
         </mask>
       </defs>
 
-      <g transform={`translate(${margin.left}, ${margin.top})`}>
-        <g ref={pathsRef} className="graph__paths" />
+      <g>
+        <g
+          transform={`translate(${margin.left}, ${margin.top})`}
+          ref={pathsRef}
+          className="graph__paths"
+        />
 
         <rect
           x="0"
           y="0"
-          height={innerHeight}
-          width={innerWidth}
+          height={height}
+          width={width}
           className="graph__grayscale-overlay"
           mask="url(#overlayMask)"
         />
         <rect
           x="0"
           y="0"
-          height={innerHeight}
-          width={innerWidth}
+          height={height}
+          width={width}
           className="graph__opacity-overlay"
           mask="url(#overlayMask)"
         />
