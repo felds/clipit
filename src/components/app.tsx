@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import useDraggingOver from "../hooks/useDraggingOver";
-import Clipper from "./clipper";
+import Clipper from "./Clipper";
 import DropArea from "./droparea";
 import SelectFile from "./select-file";
 
